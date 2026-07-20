@@ -1,0 +1,103 @@
+/**
+ * Global constants used throughout the application.
+ * Never hardcode these values anywhere else.
+ */
+const CONSTANTS = {
+
+  SHEETS: {
+
+    APPLICATIONS: "Applications",
+
+    CONFIG: "Config",
+
+    SENDER_ACCOUNTS: "SenderAccounts",
+
+    COMPANIES: "Companies",
+
+    LOGS: "Logs",
+
+    DASHBOARD: "Dashboard"
+
+  },
+
+  STATUS: {
+
+    NEW: "NEW",
+
+    DRAFT_CREATED: "DRAFT_CREATED",
+
+    APPROVED: "APPROVED",
+
+    SENT: "SENT",
+
+    REPLIED: "REPLIED",
+
+    REJECTED: "REJECTED",
+
+    INTERVIEW: "INTERVIEW",
+
+    ERROR: "ERROR"
+
+  },
+
+  RECIPIENT_TAG: {
+
+    RECRUITER: "Recruiter",
+
+    HIRING_MANAGER: "Hiring Manager",
+
+    REFERRAL: "Referral",
+
+    EXECUTIVE: "Executive"
+
+  },
+
+  CONFIG_KEYS: {
+
+    GEMINI_API_KEY: "GEMINI_API_KEY",
+
+    GEMINI_MODEL: "GEMINI_MODEL",
+
+    MODE: "MODE",
+
+    RESUME_FILE_ID: "RESUME_FILE_ID",
+
+    MAX_RETRIES: "MAX_RETRIES",
+
+    MAX_OUTPUT_TOKENS: "MAX_OUTPUT_TOKENS",
+
+    TEMPERATURE: "TEMPERATURE",
+
+    DAILY_EMAIL_LIMIT: "DAILY_EMAIL_LIMIT",
+
+    RANDOM_DELAY_MIN: "RANDOM_DELAY_MIN",
+
+    RANDOM_DELAY_MAX: "RANDOM_DELAY_MAX",
+
+    GMAIL_LABEL: "GMAIL_LABEL",
+
+    DAILY_EMAIL_LIMIT: "DAILY_EMAIL_LIMIT",
+
+    RANDOM_DELAY_MIN: "RANDOM_DELAY_MIN",
+
+    RANDOM_DELAY_MAX: "RANDOM_DELAY_MAX",
+
+    FOLLOW_UP_AFTER_DAYS: "FOLLOW_UP_AFTER_DAYS",
+
+    MAX_FOLLOW_UPS: "MAX_FOLLOW_UPS",
+
+    ENABLE_DUPLICATE_CHECK: "ENABLE_DUPLICATE_CHECK",
+
+    EMAIL_SIGNATURE: "EMAIL_SIGNATURE"
+
+},
+
+  MODE: {
+
+    DRAFT: "DRAFT",
+
+    AUTO_SEND: "AUTO_SEND"
+
+  }
+
+};
