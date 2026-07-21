@@ -99,5 +99,8 @@ function testCurrentSender() {
 
 }
 
+function processReplies() {
 
+  ReplyProcessor.process();
 
+}

@@ -289,10 +289,10 @@ class ApplicationRepository {
 
   }
 
-  static markReplied(rowNumber) {
+  static markReplied(application) {
 
     this.updateFields(
-      rowNumber,
+      application.rowNumber,
       {
 
         [Columns.APPLICATIONS.REPLIED]:
@@ -646,7 +646,20 @@ class ApplicationRepository {
       }
     );
 
-}
+  } 
+
+  static getApplicationsAwaitingReply() {
+
+    return this.getApplications()
+      .filter(application =>
+
+        application.status === CONSTANTS.STATUS.SENT &&
+        !application.replied &&
+        application.threadId
+
+      );
+
+  }
 
 }
 
