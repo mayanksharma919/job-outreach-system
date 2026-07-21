@@ -207,31 +207,35 @@ class GmailService {
       );
 
     if (!thread) {
+      Logger.log("Thread not found");
       return false;
     }
 
-    const messages =
-      thread.getMessages();
+    const messages = thread.getMessages();
 
-    // Only our original email(s)
-    if (messages.length <= 1) {
-      return false;
-    }
+    Logger.log(`Messages: ${messages.length}`);
 
-    const sender =
-      application.senderAccount.toLowerCase();
+    Logger.log(`Sender Account: ${application.senderAccount}`);
 
-    for (const message of messages) {
+    messages.forEach((message, index) => {
 
-      const from =
-        message.getFrom().toLowerCase();
+      Logger.log(
+        `Message ${index + 1}`
+      );
 
-      // Someone other than us replied
-      if (!from.includes(sender)) {
-        return true;
-      }
+      Logger.log(
+        `From: ${message.getFrom()}`
+      );
 
-    }
+      Logger.log(
+        `To: ${message.getTo()}`
+      );
+
+      Logger.log(
+        `Subject: ${message.getSubject()}`
+      );
+
+    });
 
     return false;
 
