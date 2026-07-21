@@ -403,7 +403,7 @@ class ApplicationRepository {
             CONSTANTS.STATUS.PROCESSING,
 
           [Columns.APPLICATIONS.CLAIMED_BY]:
-            sender,
+            "",
 
           [Columns.APPLICATIONS.CLAIMED_AT]:
             now,
