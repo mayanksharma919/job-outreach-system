@@ -1,43 +1,55 @@
 class FollowUpProcessor {
 
-  static processPendingFollowUps() {
-
-    const followUps =
-      FollowUpRepository.getPendingFollowUps();
+  static process() {
 
     AppLogger.info(
-      `Found ${followUps.length} pending follow-ups.`
+      "Starting Follow Up Processor..."
     );
 
-    for (const followUp of followUps) {
+    const applications =
+      ApplicationRepository.getApplicationsReadyForFollowUp();
+
+    if (!applications.length) {
+
+      AppLogger.info(
+        "No follow ups due."
+      );
+
+      return;
+
+    }
+
+    let sent = 0;
+
+    for (const application of applications) {
 
       try {
 
+        const followUp =
+          FollowUpGenerator.generate(
+            application
+          );
+
+        GmailService.sendFollowUp(
+          application,
+          followUp
+        );
+
+        ApplicationRepository.markFollowUpSent(
+          application
+        );
+
+        sent++;
+
         AppLogger.info(
-          `Processing follow-up for ${followUp.company}`
+          `Follow up sent: ${application.company}`
         );
 
-        // We'll replace this in the next step.
-        GmailService.sendFollowUp(followUp);
-
-        ApplicationRepository.updateFollowUp(
-
-          followUp.rowNumber,
-
-          followUp.followUpCount + 1,
-
-          new Date()
-
-        );
-
-        AppLogger.info(
-          `Follow-up sent for ${followUp.company}`
-        );
-
-      } catch (error) {
+      }
+      catch (error) {
 
         AppLogger.error(
-          `Failed follow-up for ${followUp.company}: ${error}`
+          `Follow up failed: ${application.company} - ${error}`
         );
 
       }
@@ -45,7 +57,7 @@ class FollowUpProcessor {
     }
 
     AppLogger.info(
-      "Follow-up processing completed."
+      `Follow Up Processor completed. ${sent} follow ups sent.`
     );
 
   }

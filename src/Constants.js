@@ -40,7 +40,9 @@ const CONSTANTS = {
 
     ERROR: "ERROR",
 
-    PROCESSING: "PROCESSING"
+    PROCESSING: "PROCESSING",
+
+    SENT: "SENT"
 
   },
 
@@ -101,6 +103,12 @@ const CONSTANTS = {
     DRAFT: "DRAFT",
 
     AUTO_SEND: "AUTO_SEND"
+
+  },
+
+  QUEUE: {
+
+  CLAIM_TIMEOUT_MINUTES: 5
 
   }
 

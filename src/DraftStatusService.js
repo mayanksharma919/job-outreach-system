@@ -1,61 +1,69 @@
 class DraftStatusService {
 
-  static syncSentDrafts() {
+  static process() {
 
-    const sheet =
-      ApplicationRepository.getSheet();
+    AppLogger.info(
+      "Checking draft statuses..."
+    );
 
-    const values =
-      sheet.getDataRange().getValues();
-
-    for (let i = 1; i < values.length; i++) {
-
-      const row = values[i];
-
-      const status =
-        row[Columns.APPLICATIONS.STATUS];
-
-      // if (
-      //   status !==
-      //   CONSTANTS.STATUS.DRAFT_CREATED
-      // ) {
-      //   continue;
-      // }
-
-      Logger.log(
-        `Row ${i + 1}: Status = ${status}`
+    const applications =
+      ApplicationRepository.getApplicationsByStatus(
+        CONSTANTS.STATUS.DRAFT_CREATED
       );
 
-      if (
-        status !==
-        CONSTANTS.STATUS.DRAFT_CREATED
-      ) {
-        continue;
-      }
+    if (!applications.length) {
 
-      const threadId =
-        row[Columns.APPLICATIONS.THREAD_ID];
+      AppLogger.info(
+        "No draft applications found."
+      );
 
-      if (!threadId) {
-        continue;
-      }
+      return;
 
-      if (
-        !GmailService.threadHasSentMessage(
-          threadId
-        )
-      ) {
-        continue;
-      }
-
-      ApplicationRepository.markSent(i + 1);
-
-      Logger.logSuccess(
-      `Marked as SENT: ${
-        row[Columns.APPLICATIONS.COMPANY]
-      }`
-    );
     }
+
+    let updated = 0;
+
+    for (const application of applications) {
+
+      try {
+
+        if (!application.threadId) {
+          continue;
+        }
+
+        const sent =
+          GmailService.threadHasSentMessage(
+            application.threadId
+          );
+
+        if (!sent) {
+          continue;
+        }
+
+        ApplicationRepository.markSent(
+          application.rowNumber
+        );
+
+        updated++;
+
+        AppLogger.info(
+          `Marked as SENT: ${application.company}`
+        );
+
+      }
+      catch (error) {
+
+        AppLogger.error(
+          `DraftStatusService - ${application.company}: ${error}`
+        );
+
+      }
+
+    }
+
+    AppLogger.info(
+      `Draft synchronization complete. ${updated} application(s) updated.`
+    );
 
   }
 

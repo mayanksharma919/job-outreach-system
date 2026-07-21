@@ -396,22 +396,121 @@ class ApplicationRepository {
         continue;
       }
 
-      this.updateFields(
+      const token =
+        this.generateClaimToken();
+
+      sheet.getRange(
         i + 1,
-        {
-          [Columns.APPLICATIONS.STATUS]:
-            CONSTANTS.STATUS.PROCESSING,
+        ColumnHelper.sheet(
+          Columns.APPLICATIONS.CLAIMED_BY
+        )
+      ).setValue(token);
 
-          [Columns.APPLICATIONS.CLAIMED_BY]:
-            "",
+      sheet.getRange(
+        i + 1,
+        ColumnHelper.sheet(
+          Columns.APPLICATIONS.CLAIMED_AT
+        )
+      ).setValue(now);
 
-          [Columns.APPLICATIONS.CLAIMED_AT]:
-            now,
+      SpreadsheetApp.flush();
 
-          [Columns.APPLICATIONS.UPDATED]:
-            now
-        }
-      );
+      const verify =
+        sheet
+          .getRange(
+            i + 1,
+            1,
+            1,
+            row.length
+          )
+          .getValues()[0];
+
+      if (
+        verify[
+          Columns.APPLICATIONS.CLAIMED_BY
+        ] !== token
+      ) {
+
+        continue;
+
+      }
+
+      const currentToken =
+        sheet.getRange(
+          i + 1,
+          ColumnHelper.sheet(
+            Columns.APPLICATIONS.CLAIMED_BY
+          )
+        ).getValue();
+
+      if (currentToken !== token) {
+
+        continue;
+
+      }
+
+      row[Columns.APPLICATIONS.STATUS] =
+        CONSTANTS.STATUS.PROCESSING;
+
+      row[Columns.APPLICATIONS.CLAIMED_BY] =
+        token;
+
+      row[Columns.APPLICATIONS.CLAIMED_AT] =
+        now;
+
+      row[Columns.APPLICATIONS.UPDATED] =
+        now;
+
+      sheet
+        .getRange(
+          i + 1,
+          1,
+          1,
+          row.length
+        )
+        .setValues([row]);
+
+        const verify =
+        sheet
+          .getRange(
+            i + 1,
+            1,
+            1,
+            row.length
+          )
+          .getValues()[0];
+
+      if (
+        verify[
+          Columns.APPLICATIONS.CLAIMED_BY
+        ] !== token
+      ) {
+
+        continue;
+
+      }
+
+      SpreadsheetApp.flush();
+
+      const verify =
+        sheet
+          .getRange(
+            i + 1,
+            1,
+            1,
+            row.length
+          )
+          .getValues()[0];
+
+      if (
+        verify[
+          Columns.APPLICATIONS.CLAIMED_BY
+        ] !== token
+      ) {
+
+        continue;
+
+      }
 
       return this.mapRow(
         row,
@@ -423,6 +522,164 @@ class ApplicationRepository {
     return null;
 
   }
+
+  static generateClaimToken() {
+
+    return Utilities.getUuid();
+
+}
+  static releaseExpiredClaims() {
+
+    const sheet = this.getSheet();
+
+    const values = sheet.getDataRange().getValues();
+
+    const now = new Date();
+
+    const timeoutMillis =
+      CONSTANTS.QUEUE.CLAIM_TIMEOUT_MINUTES * 60 * 1000;
+
+    for (let i = 1; i < values.length; i++) {
+
+      const row = values[i];
+
+      // Skip anything not being processed
+      if (row[Columns.APPLICATIONS.STATUS] !== CONSTANTS.STATUS.PROCESSING) {
+        continue;
+      }
+
+      const claimedAt =
+        row[Columns.APPLICATIONS.CLAIMED_AT];
+
+      // If there is no timestamp, ignore
+      if (!claimedAt) {
+        continue;
+      }
+
+      const age = now - new Date(claimedAt);
+
+      if (age < timeoutMillis) {
+        continue;
+      }
+
+      Logger.log(
+        `Releasing expired claim: ${row[Columns.APPLICATIONS.COMPANY]}`
+      );
+
+      row[Columns.APPLICATIONS.STATUS] = CONSTANTS.STATUS.NEW;
+      row[Columns.APPLICATIONS.CLAIMED_BY] = "";
+      row[Columns.APPLICATIONS.CLAIMED_AT] = "";
+      row[Columns.APPLICATIONS.UPDATED] = now;
+
+      sheet
+        .getRange(i + 1, 1, 1, row.length)
+        .setValues([row]);
+
+    }
+
+    SpreadsheetApp.flush();
+
+  }
+
+  static getApplicationsByStatus(status) {
+
+    const sheet = this.getSheet();
+
+    const values = sheet.getDataRange().getValues();
+
+    const applications = [];
+
+    for (let i = 1; i < values.length; i++) {
+
+      const row = values[i];
+
+      if (
+        row[Columns.APPLICATIONS.STATUS] !== status
+      ) {
+        continue;
+      }
+
+      applications.push(
+        this.mapRow(
+          row,
+          i + 1
+        )
+      );
+
+    }
+
+    return applications;
+
+  }
+
+  static getApplicationsReadyForFollowUp() {
+
+    const applications =
+      this.getApplicationsByStatus(
+        CONSTANTS.STATUS.SENT
+      );
+
+    const now = new Date();
+
+    const ready = [];
+
+    for (const application of applications) {
+
+      if (application.replied) {
+        continue;
+      }
+
+      if (
+        application.followUpCount >= 3
+      ) {
+        continue;
+      }
+
+      const lastActivity =
+        application.lastFollowUp ||
+        application.sentDate;
+
+      if (!lastActivity) {
+        continue;
+      }
+
+      const days =
+        Math.floor(
+          (now - new Date(lastActivity))
+          / (1000 * 60 * 60 * 24)
+        );
+
+      if (days < 5) {
+        continue;
+      }
+
+      ready.push(application);
+
+    }
+
+    return ready;
+
+  }
+
+  static markFollowUpSent(application) {
+
+    this.updateFields(
+      application.rowNumber,
+      {
+
+        [Columns.APPLICATIONS.FOLLOW_UP_COUNT]:
+          application.followUpCount + 1,
+
+        [Columns.APPLICATIONS.LAST_FOLLOW_UP]:
+          new Date(),
+
+        [Columns.APPLICATIONS.UPDATED]:
+          new Date()
+
+      }
+    );
+
+}
 
 }
 

@@ -116,12 +116,16 @@ class GmailService {
 
 
 
-  static sendFollowUp(followUp) {
+  static sendFollowUp(application, followUp) {
 
     const thread =
-      GmailApp.getThreadById(
-        followUp.threadId
-      );
+    GmailApp.getThreadById(
+        application.threadId
+    );
+
+    thread.reply(
+        followUp.body
+    );
 
     if (!thread) {
 

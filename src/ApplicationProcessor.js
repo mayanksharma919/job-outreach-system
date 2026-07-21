@@ -2,12 +2,12 @@ class ApplicationProcessor {
 
   static processNewApplications() {
 
+  
     let success = 0;
     let failed = 0;
     let processed = 0;
 
-    if (
-      !SenderSelector.canCurrentSenderSend()
+    if (!SenderSelector.canCurrentSenderSend()
     ) {
 
       AppLogger.info(
@@ -19,6 +19,12 @@ class ApplicationProcessor {
     }
 
     while (true) {
+
+
+      // Every 10 processed applications, reclaim abandoned jobs
+      if (processed % 10 === 0) {
+            ApplicationRepository.releaseExpiredClaims();
+      }
 
       if (
         !DeliverabilityService.canProcess(processed)

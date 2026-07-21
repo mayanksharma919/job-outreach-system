@@ -4,6 +4,19 @@ function generateDrafts() {
 
 }
 
+
+function processDraftStatuses() {
+
+  DraftStatusService.process();
+
+}
+
+function processFollowUps() {
+
+  FollowUpProcessor.process();
+
+}
+
 function updateReplies() {
 
   const applications =
@@ -31,15 +44,6 @@ function updateReplies() {
   }
 
 }
-
-
-function processFollowUps() {
-
-  FollowUpProcessor.processPendingFollowUps();
-
-}
-
-
 
 function syncSentDrafts() {
 
@@ -94,3 +98,6 @@ function testCurrentSender() {
   );
 
 }
+
+
+
