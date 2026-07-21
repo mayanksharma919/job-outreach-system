@@ -461,8 +461,7 @@ class ApplicationRepository {
       row[Columns.APPLICATIONS.UPDATED] =
         now;
 
-      sheet
-        .getRange(
+      sheet.getRange(
           i + 1,
           1,
           1,
@@ -470,47 +469,7 @@ class ApplicationRepository {
         )
         .setValues([row]);
 
-        const verify =
-        sheet
-          .getRange(
-            i + 1,
-            1,
-            1,
-            row.length
-          )
-          .getValues()[0];
-
-      if (
-        verify[
-          Columns.APPLICATIONS.CLAIMED_BY
-        ] !== token
-      ) {
-
-        continue;
-
-      }
-
       SpreadsheetApp.flush();
-
-      const verify =
-        sheet
-          .getRange(
-            i + 1,
-            1,
-            1,
-            row.length
-          )
-          .getValues()[0];
-
-      if (
-        verify[
-          Columns.APPLICATIONS.CLAIMED_BY
-        ] !== token
-      ) {
-
-        continue;
-
-      }
 
       return this.mapRow(
         row,
