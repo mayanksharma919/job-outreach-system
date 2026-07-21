@@ -63,6 +63,11 @@ class ApplicationProcessor {
             `Skipping ${application.recipientEmail}. Already contacted.`
           );
 
+          ApplicationRepository.updateStatus(
+            application.rowNumber,
+            CONSTANTS.STATUS.REJECTED
+          );
+
           continue;
 
         }

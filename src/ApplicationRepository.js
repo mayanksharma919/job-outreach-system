@@ -383,9 +383,6 @@ class ApplicationRepository {
 
     const values = sheet.getDataRange().getValues();
 
-    const sender =
-      Session.getActiveUser().getEmail();
-
     const now = new Date();
 
     for (let i = 1; i < values.length; i++) {
