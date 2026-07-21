@@ -87,8 +87,7 @@ class ApplicationRepository {
 
     replied:
       row[
-        Columns.APPLICATIONS.REPLIED
-      ],
+        Columns.APPLICATIONS.REPLIED],
 
     priority:
       row[
@@ -583,6 +582,15 @@ class ApplicationRepository {
     const ready = [];
 
     for (const application of applications) {
+
+      Logger.log({
+        company: application.company,
+        status: application.status,
+        sentDate: application.sentDate,
+        lastFollowUp: application.lastFollowUp,
+        followUpCount: application.followUpCount,
+        replied: application.replied
+      });
 
       if (application.replied) {
         continue;

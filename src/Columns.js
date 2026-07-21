@@ -15,28 +15,26 @@ const Columns = {
 
     STATUS: 9,
 
-    ASSIGNED_SENDER: 10,
-    SENDER_ACCOUNT: 11,
+    SENDER_ACCOUNT: 10,
 
-    DRAFT_ID: 12,
-    THREAD_ID: 13,
+    DRAFT_ID: 11,
+    THREAD_ID: 12,
 
-    FOLLOW_UP_COUNT: 14,
-    LAST_FOLLOW_UP: 15,
+    FOLLOW_UP_COUNT: 13,
+    LAST_FOLLOW_UP: 14,
 
-    REPLIED: 16,
+    REPLIED: 15,
 
-    PRIORITY: 17,
-    CREATED: 18,
-    UPDATED: 19,
+    PRIORITY: 16,
+    CREATED: 17,
+    UPDATED: 18,
 
-    ERROR: 20,
+    ERROR: 19,
 
-    CLAIMED_BY: 21,
-    
-    CLAIMED_AT: 22
+    CLAIMED_BY: 20,
+    CLAIMED_AT: 21
 
-},
+  },
 
   SENDERS: {
 
