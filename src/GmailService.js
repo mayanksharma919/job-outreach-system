@@ -198,4 +198,43 @@ class GmailService {
     return false;
 
   }
+
+  static hasReply(application) {
+
+    const thread =
+      GmailApp.getThreadById(
+        application.threadId
+      );
+
+    if (!thread) {
+      return false;
+    }
+
+    const messages =
+      thread.getMessages();
+
+    // Only our original email(s)
+    if (messages.length <= 1) {
+      return false;
+    }
+
+    const sender =
+      application.senderAccount.toLowerCase();
+
+    for (const message of messages) {
+
+      const from =
+        message.getFrom().toLowerCase();
+
+      // Someone other than us replied
+      if (!from.includes(sender)) {
+        return true;
+      }
+
+    }
+
+    return false;
+
+  }
 }
+
