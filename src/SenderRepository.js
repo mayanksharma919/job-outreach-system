@@ -3,7 +3,7 @@ class SenderRepository {
   static getSheet() {
 
     return SpreadsheetApp
-      .getActiveSpreadsheet()
+      .openById(CONSTANTS.SPREADSHEET_ID)
       .getSheetByName(CONSTANTS.SHEETS.SENDER_ACCOUNTS);
 
   }

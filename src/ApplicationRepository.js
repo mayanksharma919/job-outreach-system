@@ -3,7 +3,7 @@ class ApplicationRepository {
   static getSheet() {
 
     return SpreadsheetApp
-      .getActiveSpreadsheet()
+      .openById(CONSTANTS.SPREADSHEET_ID)
       .getSheetByName(CONSTANTS.SHEETS.APPLICATIONS);
 
   }

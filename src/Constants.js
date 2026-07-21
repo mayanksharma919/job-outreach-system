@@ -4,6 +4,8 @@
  */
 const CONSTANTS = {
 
+  SPREADSHEET_ID: "1biQZJdxEoR-R26LixTAadSgRFNaItfu9BD_VnQJozT4",
+
   SHEETS: {
 
     APPLICATIONS: "Applications",
@@ -36,7 +38,9 @@ const CONSTANTS = {
 
     INTERVIEW: "INTERVIEW",
 
-    ERROR: "ERROR"
+    ERROR: "ERROR",
+
+    PROCESSING: "PROCESSING"
 
   },
 

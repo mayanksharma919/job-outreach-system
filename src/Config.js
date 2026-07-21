@@ -23,7 +23,7 @@ class Config {
     Config._cache = {};
 
     const sheet = SpreadsheetApp
-      .getActiveSpreadsheet()
+      .openById(CONSTANTS.SPREADSHEET_ID)
       .getSheetByName(CONSTANTS.SHEETS.CONFIG);
 
     const values = sheet.getDataRange().getValues();
