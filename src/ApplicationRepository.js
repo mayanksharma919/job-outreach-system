@@ -218,61 +218,57 @@ class ApplicationRepository {
 }
 
   static markDraftCreated(
+  rowNumber,
+  senderEmail,
+  draft
+) {
+
+  this.updateFields(
     rowNumber,
-    senderEmail,
-    draft
-  ) {
+    {
 
-  const sheet = this.getSheet();
+      [Columns.APPLICATIONS.STATUS]:
+        CONSTANTS.STATUS.DRAFT_CREATED,
 
-  sheet.getRange(rowNumber, 10)
-     .setValue("DRAFT_CREATED");
+      [Columns.APPLICATIONS.SENDER_ACCOUNT]:
+        senderEmail,
 
-  sheet.getRange(
-    rowNumber,
-    ColumnHelper.sheet(
-      Columns.APPLICATIONS.SENDER_ACCOUNT
-    )
-  ).setValue(senderEmail);
+      [Columns.APPLICATIONS.DRAFT_ID]:
+        draft.id,
 
-  sheet.getRange(
-    rowNumber,
-    ColumnHelper.sheet(
-      Columns.APPLICATIONS.DRAFT_ID
-    )
-  ).setValue(draft.id);
+      [Columns.APPLICATIONS.THREAD_ID]:
+        draft.threadId,
 
-  sheet.getRange(
-    rowNumber,
-    ColumnHelper.sheet(
-      Columns.APPLICATIONS.THREAD_ID
-    )
-  ).setValue(draft.threadId);
+      [Columns.APPLICATIONS.UPDATED]:
+        new Date()
+
+    }
+  );
 
 }
 
   static updateError(
+  rowNumber,
+  error
+) {
+
+  this.updateFields(
     rowNumber,
-    error
-  ) {
+    {
 
-    this.updateFields(
-      rowNumber,
-      {
+      [Columns.APPLICATIONS.ERROR]:
+        error,
 
-        [Columns.APPLICATIONS.ERROR]:
-          error,
+      [Columns.APPLICATIONS.STATUS]:
+        CONSTANTS.STATUS.ERROR,
 
-        [Columns.APPLICATIONS.STATUS]:
-          CONSTANTS.STATUS.ERROR,
+      [Columns.APPLICATIONS.UPDATED]:
+        new Date()
 
-        [Columns.APPLICATIONS.UPDATED]:
-          new Date()
+    }
+  );
 
-      }
-    );
-
-  }
+}
 
   static updateStatus(
     rowNumber,
@@ -380,6 +376,56 @@ class ApplicationRepository {
     );
 
 }
+
+  static claimNextApplication() {
+
+    const sheet = this.getSheet();
+
+    const values = sheet.getDataRange().getValues();
+
+    const sender =
+      Session.getActiveUser().getEmail();
+
+    const now = new Date();
+
+    for (let i = 1; i < values.length; i++) {
+
+      const row = values[i];
+
+      if (
+        row[Columns.APPLICATIONS.STATUS] !==
+        CONSTANTS.STATUS.NEW
+      ) {
+        continue;
+      }
+
+      this.updateFields(
+        i + 1,
+        {
+          [Columns.APPLICATIONS.STATUS]:
+            CONSTANTS.STATUS.PROCESSING,
+
+          [Columns.APPLICATIONS.CLAIMED_BY]:
+            sender,
+
+          [Columns.APPLICATIONS.CLAIMED_AT]:
+            now,
+
+          [Columns.APPLICATIONS.UPDATED]:
+            now
+        }
+      );
+
+      return this.mapRow(
+        row,
+        i + 1
+      );
+
+    }
+
+    return null;
+
+  }
 
 }
 

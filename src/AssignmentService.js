@@ -1,5 +1,26 @@
 class AssignmentService {
 
+  static claimNextApplication() {
+
+    const lock =
+      LockService.getScriptLock();
+
+    lock.waitLock(10000);
+
+    try {
+
+      return ApplicationRepository
+        .claimNextApplication();
+
+    }
+    finally {
+
+      lock.releaseLock();
+
+    }
+
+  }
+
   static assign(application) {
 
     const availableSenders = SenderRepository

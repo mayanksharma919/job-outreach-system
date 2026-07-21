@@ -2,15 +2,9 @@ class ApplicationProcessor {
 
   static processNewApplications() {
 
-    const applications =
-      ApplicationRepository.getNewApplications();
-
-    AppLogger.info(
-      `Found ${applications.length} new application(s).`
-    );
-
     let success = 0;
     let failed = 0;
+    let processed = 0;
 
     if (
       !SenderSelector.canCurrentSenderSend()
@@ -24,9 +18,11 @@ class ApplicationProcessor {
 
     }
 
-    for (let i = 0; i < applications.length; i++) {
+    while (true) {
 
-      if (!DeliverabilityService.canProcess(i)) {
+      if (
+        !DeliverabilityService.canProcess(processed)
+      ) {
 
         AppLogger.info(
           "Daily email limit reached."
@@ -36,7 +32,20 @@ class ApplicationProcessor {
 
       }
 
-      const application = applications[i];
+      const application =
+        AssignmentService.claimNextApplication();
+
+      if (!application) {
+
+        AppLogger.info(
+          "No more applications to process."
+        );
+
+        break;
+
+      }
+
+      processed++;
 
       try {
 
@@ -99,7 +108,8 @@ class ApplicationProcessor {
           `Processed ${application.company} (${result.status})`
         );
 
-      } catch (error) {
+      }
+      catch (error) {
 
         failed++;
 
@@ -117,7 +127,7 @@ class ApplicationProcessor {
     }
 
     AppLogger.info("====================================");
-    AppLogger.info(`Total Applications : ${applications.length}`);
+    AppLogger.info(`Processed          : ${processed}`);
     AppLogger.info(`Successful Drafts  : ${success}`);
     AppLogger.info(`Failed             : ${failed}`);
     AppLogger.info("====================================");

@@ -30,7 +30,11 @@ const Columns = {
     CREATED: 18,
     UPDATED: 19,
 
-    ERROR: 20
+    ERROR: 20,
+
+    CLAIMED_BY: 21,
+    
+    CLAIMED_AT: 22
 
 },
 
