@@ -1,9 +1,18 @@
 class SenderSelector {
 
+
+  static currentSenderEmail = null;
+
   static getCurrentSender() {
 
+    if (this.currentSender) {
+
+      return this.currentSender;
+
+    }
+
     const email =
-      Session.getActiveUser().getEmail();
+      this.getCurrentSenderEmail();
 
     const sender =
       SenderRepository
@@ -19,6 +28,8 @@ class SenderSelector {
       );
 
     }
+
+    this.currentSender = sender;
 
     return sender;
 
@@ -40,4 +51,20 @@ class SenderSelector {
 
   }
 
+  static getCurrentSenderEmail() {
+
+    if (this.currentSenderEmail) {
+      return this.currentSenderEmail;
+    }
+
+    this.currentSenderEmail =
+      Config.get(
+        CONSTANTS.CONFIG_KEYS.SENDER_EMAIL
+      );
+
+    return this.currentSenderEmail;
+
+  }
+
 }
+

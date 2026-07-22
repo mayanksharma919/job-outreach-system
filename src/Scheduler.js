@@ -2,39 +2,49 @@ class Scheduler {
 
   static run() {
 
-    AppLogger.info(
-      "===== Scheduler Started ====="
-    );
+    const monitor = SystemMonitor.start();
 
-    const applications =
-      ApplicationRepository.getActiveApplications();
+    try {
 
-    AppLogger.info(
-      `Active applications: ${applications.length}`
-    );
+        const applications =
+        ApplicationRepository.getActiveApplications();
 
-    for (const application of applications) {
+        monitor.applicationsProcessed = applications.length;
 
-      if (
-        ReplyProcessor.process(application)
-      ) {
-        continue;
-      }
+        for (const application of applications) {
 
-      if (
-        BounceProcessor.process(application)
-      ) {
-        continue;
-      }
+            if (ReplyProcessor.process(application)) {
+                monitor.repliesFound++;
+            }
 
-      FollowUpProcessor.process(application);
+            if (BounceProcessor.process(application)) {
+                monitor.bouncesFound++;
+            }
+
+            if (FollowUpProcessor.process(application)) {
+                monitor.emailsSent++;
+            }
+
+        }
+
+        SystemMonitor.finish(
+        monitor,
+        "SUCCESS"
+        );
+
+    } catch (error) {
+
+        monitor.errors++;
+
+        SystemMonitor.finish(
+        monitor,
+        "FAILED"
+        );
+
+        throw error;
 
     }
 
-    AppLogger.info(
-      "===== Scheduler Finished ====="
-    );
-
-  }
+    }
 
 }

@@ -184,3 +184,10 @@ function installSystem() {
   InstallationService.install();
 
 }
+
+
+function refreshDashboard() {
+
+  DashboardService.refresh();
+
+}

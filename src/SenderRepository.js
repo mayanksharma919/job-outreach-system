@@ -116,4 +116,14 @@ class SenderRepository {
 
   }
 
+  static getByEmail(email) {
+
+    return this
+      .getAll()
+      .find(sender =>
+        sender.email === email
+      );
+
+  }
+
 }

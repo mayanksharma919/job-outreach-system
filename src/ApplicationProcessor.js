@@ -2,24 +2,35 @@ class ApplicationProcessor {
 
   static processNewApplications() {
 
-  
+    if (!DeliverabilityService.canSendNow()) {
+
+        AppLogger.info(
+            "Outside configured sending hours."
+        );
+
+        return;
+
+    }
+
+    DeliverabilityService.sleepBeforeProcessing();
+
     let success = 0;
     let failed = 0;
     let processed = 0;
 
-    if (!SenderSelector.canCurrentSenderSend()
-    ) {
-
-      AppLogger.info(
-        "Current sender cannot send any more emails today."
-      );
-
-      return;
-
-    }
 
     while (true) {
 
+
+      if (!SenderSelector.canCurrentSenderSend()) {
+
+        AppLogger.info(
+            "Current sender cannot send any more emails today."
+        );
+
+        break;
+
+    }
 
       // Every 10 processed applications, reclaim abandoned jobs
       if (processed % 10 === 0) {
@@ -87,8 +98,11 @@ class ApplicationProcessor {
             email
           );
 
-        const senderEmail =
-          Session.getActiveUser().getEmail();
+        const sender =
+          SenderSelector.getCurrentSender();
+
+      const senderEmail =
+          sender.email;
 
         ApplicationRepository.markDraftCreated(
           application.rowNumber,
@@ -112,6 +126,8 @@ class ApplicationProcessor {
         SenderRepository.incrementSentToday(
           senderEmail
         );
+
+        DeliverabilityService.sleepBetweenEmails();
 
         success++;
 

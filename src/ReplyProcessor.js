@@ -4,9 +4,10 @@ class ReplyProcessor {
 
     try {
 
-      if (
-        !GmailService.hasReply(application)
-      ) {
+      const hasReply =
+        ReplyService.hasRecruiterReplied(application);
+
+      if (!hasReply) {
         return false;
       }
 
@@ -21,8 +22,7 @@ class ReplyProcessor {
 
       return true;
 
-    }
-    catch (error) {
+    } catch (error) {
 
       AppLogger.error(
         `Reply check failed: ${application.company} - ${error}`

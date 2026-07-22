@@ -9,8 +9,13 @@ class AssignmentService {
 
     try {
 
+      const sender =
+          SenderSelector.getCurrentSender();
+
       return ApplicationRepository
-        .claimNextApplication();
+          .claimNextApplication(
+              sender.email
+          );
 
     }
     finally {

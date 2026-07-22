@@ -2,9 +2,9 @@ class ApplicationRepository {
 
   static getSheet() {
 
-    return SpreadsheetApp
-      .openById(CONSTANTS.SPREADSHEET_ID)
-      .getSheetByName(CONSTANTS.SHEETS.APPLICATIONS);
+    return SpreadsheetService.getSheet(
+      CONSTANTS.SHEETS.APPLICATIONS
+    );
 
   }
 
@@ -361,7 +361,7 @@ class ApplicationRepository {
 
 }
 
-  static claimNextApplication() {
+  static claimNextApplication(senderEmail) {
 
     const sheet = this.getSheet();
 
@@ -444,6 +444,9 @@ class ApplicationRepository {
 
       row[Columns.APPLICATIONS.UPDATED] =
         now;
+
+      row[Columns.APPLICATIONS.SENDER_ACCOUNT] =
+        senderEmail;
 
       sheet.getRange(
           i + 1,
