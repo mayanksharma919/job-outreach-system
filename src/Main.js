@@ -104,3 +104,24 @@ function processReplies() {
   ReplyProcessor.process();
 
 }
+
+function testGmailService() {
+  Logger.log("typeof Gmail = " + typeof Gmail);
+  Logger.log("typeof GmailApp = " + typeof GmailApp);
+}
+
+
+function testGmailService() {
+  Logger.log("typeof Gmail = " + typeof Gmail);
+}
+
+
+function debugThread() {
+
+  const application =
+    ApplicationRepository
+      .getSentApplications()[0];
+
+  GmailService.debugThread(application);
+
+}
