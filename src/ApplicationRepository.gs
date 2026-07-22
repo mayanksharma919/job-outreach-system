@@ -85,10 +85,6 @@ class ApplicationRepository {
         Columns.APPLICATIONS.LAST_FOLLOW_UP
       ],
 
-    replied:
-      row[
-        Columns.APPLICATIONS.REPLIED],
-
     priority:
       row[
         Columns.APPLICATIONS.PRIORITY
@@ -115,29 +111,39 @@ class ApplicationRepository {
 
   static getApplications() {
 
-  const sheet = this.getSheet();
+    const sheet = this.getSheet();
 
-  const values =
-    sheet.getDataRange().getValues();
+    const values =
+      sheet.getDataRange().getValues();
 
-  const applications = [];
+    const applications = [];
 
-  for (let i = 1; i < values.length; i++) {
+    for (let i = 1; i < values.length; i++) {
 
-    applications.push(
+      applications.push(
 
-      this.mapRow(
-        values[i],
-        i + 1
-      )
+        this.mapRow(
+          values[i],
+          i + 1
+        )
 
-    );
+      );
 
   }
 
   return applications;
 
 }
+
+  static getActiveApplications() {
+
+    return this
+      .getApplications()
+      .filter(application =>
+        application.status === CONSTANTS.STATUS.SENT
+      );
+
+  }
 
 
   static getNewApplications() {
@@ -188,7 +194,7 @@ class ApplicationRepository {
     .getSentApplications()
     .filter(application => {
 
-      if (application.replied === true) {
+      if (application.status === CONSTANTS.STATUS.REPLIED) {
         return false;
       }
 
@@ -288,27 +294,6 @@ class ApplicationRepository {
     );
 
   }
-
-  static markReplied(application) {
-
-    this.updateFields(
-      application.rowNumber,
-      {
-
-        [Columns.APPLICATIONS.REPLIED]:
-          true,
-
-        [Columns.APPLICATIONS.STATUS]:
-          CONSTANTS.STATUS.REPLIED,
-
-        [Columns.APPLICATIONS.UPDATED]:
-          new Date()
-
-      }
-    );
-
-  }
-
 
 
   static markSent(rowNumber) {
@@ -588,13 +573,8 @@ class ApplicationRepository {
         status: application.status,
         sentDate: application.sentDate,
         lastFollowUp: application.lastFollowUp,
-        followUpCount: application.followUpCount,
-        replied: application.replied
-      });
-
-      if (application.replied) {
-        continue;
-      }
+        followUpCount: application.followUpCount
+    });
 
       if (
         application.followUpCount >= 3
@@ -648,13 +628,30 @@ class ApplicationRepository {
 
   } 
 
+  static updateStatus(application, status) {
+
+    this.updateFields(
+      application.rowNumber,
+      {
+
+        [Columns.APPLICATIONS.STATUS]:
+          status,
+
+        [Columns.APPLICATIONS.UPDATED]:
+          new Date()
+
+      }
+    );
+
+  }
+
+
   static getApplicationsAwaitingReply() {
 
     return this.getApplications()
       .filter(application =>
 
         application.status === CONSTANTS.STATUS.SENT &&
-        !application.replied &&
         application.threadId
 
       );

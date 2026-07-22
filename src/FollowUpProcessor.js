@@ -1,64 +1,72 @@
 class FollowUpProcessor {
 
-  static process() {
+  static process(application) {
 
-    AppLogger.info(
-      "Starting Follow Up Processor..."
-    );
+    try {
 
-    const applications =
-      ApplicationRepository.getApplicationsReadyForFollowUp();
+      if (
+        !FollowUpService.isFollowUpDue(application)
+      ) {
+        return false;
+      }
 
-    if (!applications.length) {
-
-      AppLogger.info(
-        "No follow ups due."
-      );
-
-      return;
-
-    }
-
-    let sent = 0;
-
-    for (const application of applications) {
-
-      try {
-
-        const followUp =
-          FollowUpGenerator.generate(
-            application
-          );
-
-        GmailService.sendFollowUp(
-          application,
-          followUp
-        );
-
-        ApplicationRepository.markFollowUpSent(
+      const followUp =
+        FollowUpGenerator.generate(
           application
         );
 
-        sent++;
+      const result =
+        RetryService.execute(
 
-        AppLogger.info(
-          `Follow up sent: ${application.company}`
+          () => GmailService.sendFollowUp(
+            application,
+            followUp
+          ),
+
+          `Follow-up: ${application.company}`
+
         );
 
-      }
-      catch (error) {
+      if (!result.success) {
+
+        ApplicationRepository.updateStatus(
+
+          application,
+
+          CONSTANTS.STATUS.FAILED
+
+        );
 
         AppLogger.error(
-          `Follow up failed: ${application.company} - ${error}`
+
+          `Follow-up permanently failed: ${application.company}`
+
         );
+
+        return false;
 
       }
 
-    }
+      ApplicationRepository.markFollowUpSent(
+        application
+      );
 
-    AppLogger.info(
-      `Follow Up Processor completed. ${sent} follow ups sent.`
-    );
+      AppLogger.info(
+        `Follow up sent: ${application.company}`
+      );
+
+      return true;
+
+    }
+    catch (error) {
+
+      AppLogger.error(
+        `Follow up failed: ${application.company} - ${error}`
+      );
+
+      return false;
+
+    }
 
   }
 

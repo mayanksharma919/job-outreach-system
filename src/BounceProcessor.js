@@ -1,22 +1,22 @@
-class ReplyProcessor {
+class BounceProcessor {
 
   static process(application) {
 
     try {
 
       if (
-        !GmailService.hasReply(application)
+        !BounceService.hasBounced(application)
       ) {
         return false;
       }
 
       ApplicationRepository.updateStatus(
         application,
-        CONSTANTS.STATUS.REPLIED
+        CONSTANTS.STATUS.BOUNCED
       );
 
       AppLogger.info(
-        `Reply detected: ${application.company}`
+        `Bounce detected: ${application.company}`
       );
 
       return true;
@@ -25,7 +25,7 @@ class ReplyProcessor {
     catch (error) {
 
       AppLogger.error(
-        `Reply check failed: ${application.company} - ${error}`
+        `Bounce check failed: ${application.company} - ${error}`
       );
 
       return false;

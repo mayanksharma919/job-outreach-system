@@ -23,16 +23,14 @@ const Columns = {
     FOLLOW_UP_COUNT: 13,
     LAST_FOLLOW_UP: 14,
 
-    REPLIED: 15,
+    PRIORITY: 15,
+    CREATED: 16,
+    UPDATED: 17,
 
-    PRIORITY: 16,
-    CREATED: 17,
-    UPDATED: 18,
+    ERROR: 18,
 
-    ERROR: 19,
-
-    CLAIMED_BY: 20,
-    CLAIMED_AT: 21
+    CLAIMED_BY: 19,
+    CLAIMED_AT: 20
 
   },
 

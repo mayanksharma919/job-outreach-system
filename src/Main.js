@@ -125,3 +125,62 @@ function debugThread() {
   GmailService.debugThread(application);
 
 }
+
+
+function testReplyDetection() {
+
+  const applications =
+      ApplicationRepository
+          .getApplicationsByStatus(
+              CONSTANTS.STATUS.SENT
+          );
+
+  if (!applications.length) {
+
+      Logger.log("No SENT applications.");
+
+      return;
+
+  }
+
+  const application = applications[0];
+
+  Logger.log(
+      ReplyService.hasRecruiterReplied(
+          application
+      )
+  );
+
+}
+
+function testUpdateReplies() {
+
+  ReplyService.updateReplies();
+
+}
+
+function testBounceDetection() {
+
+  const applications =
+    ApplicationRepository.getApplications();
+
+  for (const application of applications) {
+
+    BounceProcessor.process(application);
+
+  }
+
+}
+
+
+function runScheduler() {
+
+  Scheduler.run();
+
+}
+
+function installSystem() {
+
+  InstallationService.install();
+
+}

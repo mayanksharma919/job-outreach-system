@@ -41,8 +41,6 @@ class FollowUpRepository {
       const sentDate =
         row[Columns.APPLICATIONS.SENT_DATE];
 
-      const replied = row[Columns.APPLICATIONS.REPLIED];
-
       Logger.log("----------------------");
       Logger.log(
       "Company: " +
@@ -52,13 +50,8 @@ class FollowUpRepository {
       Logger.log("Thread ID: " + threadId);
       Logger.log("Follow-up Count: " + followUpCount);
       Logger.log("Last Follow-up: " + lastFollowUp);
-      Logger.log("Replied: " + replied);
 
       if (status !== CONSTANTS.STATUS.SENT) {
-        continue;
-      }
-
-      if (replied === true) {
         continue;
       }
 
