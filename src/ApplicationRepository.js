@@ -252,6 +252,33 @@ class ApplicationRepository {
 
 }
 
+  static recoverFromGmail(
+    rowNumber,
+    conversation
+  ) {
+
+    this.updateFields(
+      rowNumber,
+      {
+
+        [Columns.APPLICATIONS.STATUS]:
+
+          conversation.hasSentMessage
+            ? CONSTANTS.STATUS.SENT
+            : CONSTANTS.STATUS.DRAFT_CREATED,
+
+        [Columns.APPLICATIONS.THREAD_ID]:
+          conversation.threadId,
+
+        [Columns.APPLICATIONS.UPDATED]:
+          new Date()
+
+      }
+
+    );
+
+  }
+
   static updateError(
   rowNumber,
   error

@@ -23,4 +23,15 @@ class WorkerService {
 
   }
 
+  static canSend() {
+
+    const worker = this.getCurrentWorker();
+
+    return (
+      worker.status === "ACTIVE" &&
+      worker.sentToday < worker.dailyLimit
+    );
+
+  }
+
 }

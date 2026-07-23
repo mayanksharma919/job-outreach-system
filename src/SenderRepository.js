@@ -69,26 +69,42 @@ class SenderRepository {
 
   static incrementSentToday(email) {
 
-    const sender = this.getAll().find(
-      s => s.email === email
-    );
+    const lock = LockService.getScriptLock();
 
-    if (!sender) {
+    lock.waitLock(10000);
 
-      throw new Error(
-        `Sender not found: ${email}`
-      );
+    try {
 
-    }
+      const sender = this.getByEmail(email);
 
-    this.getSheet()
-      .getRange(
+      if (!sender) {
+
+        throw new Error(
+          `Sender not found: ${email}`
+        );
+
+      }
+
+      const cell = this.getSheet().getRange(
+
         sender.rowNumber,
+
         ColumnHelper.sheet(
           Columns.SENDERS.SENT_TODAY
         )
-      )
-      .setValue(sender.sentToday + 1);
+
+      );
+
+      const current = Number(cell.getValue());
+
+      cell.setValue(current + 1);
+
+    }
+    finally {
+
+      lock.releaseLock();
+
+    }
 
   }
 

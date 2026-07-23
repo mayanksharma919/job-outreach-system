@@ -1,6 +1,6 @@
 class DuplicateProtectionService {
 
-  static alreadyContacted(application) {
+  static findExistingConversation(application) {
 
     const enabled = Config.get(
       CONSTANTS.CONFIG_KEYS.ENABLE_DUPLICATE_CHECK
@@ -8,7 +8,7 @@ class DuplicateProtectionService {
 
     if (enabled !== "TRUE") {
 
-      return false;
+      return null;
 
     }
 
@@ -22,7 +22,24 @@ class DuplicateProtectionService {
     const threads =
       GmailApp.search(query, 0, 1);
 
-    return threads.length > 0;
+    if (threads.length === 0) {
+
+      return null;
+
+    }
+
+    const thread = threads[0];
+
+    return {
+
+      threadId: thread.getId(),
+
+      hasSentMessage:
+        GmailService.threadHasSentMessage(
+          thread.getId()
+        )
+
+    };
 
   }
 

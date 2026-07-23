@@ -78,19 +78,25 @@ class ApplicationProcessor {
             `Processing: ${application.company}`
           );
 
-          if (
-            DuplicateProtectionService.alreadyContacted(
+          const existingConversation =
+            DuplicateProtectionService.findExistingConversation(
               application
-            )
-          ) {
-
-            AppLogger.warn(
-              `Skipping ${application.recipientEmail}. Already contacted.`
             );
 
-            ApplicationRepository.updateStatus(
+          if (existingConversation) {
+
+            AppLogger.warn(
+
+              `Recovered existing Gmail conversation for ${application.company}.`
+
+            );
+
+            ApplicationRepository.recoverFromGmail(
+
               application.rowNumber,
-              CONSTANTS.STATUS.REJECTED
+
+              existingConversation
+
             );
 
             continue;
