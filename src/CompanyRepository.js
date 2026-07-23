@@ -2,9 +2,9 @@ class CompanyRepository {
 
   static getSheet() {
 
-    return SpreadsheetApp
-      .openById(CONSTANTS.SPREADSHEET_ID)
-      .getSheetByName(CONSTANTS.SHEETS.COMPANIES);
+    return SpreadsheetService.getSheet(
+      CONSTANTS.SHEETS.COMPANIES
+    );
 
   }
 

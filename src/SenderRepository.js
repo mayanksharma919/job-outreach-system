@@ -2,9 +2,9 @@ class SenderRepository {
 
   static getSheet() {
 
-    return SpreadsheetApp
-      .openById(CONSTANTS.SPREADSHEET_ID)
-      .getSheetByName(CONSTANTS.SHEETS.SENDER_ACCOUNTS);
+    return SpreadsheetService.getSheet(
+        CONSTANTS.SHEETS.SENDER_ACCOUNTS
+    );
 
   }
 
@@ -118,11 +118,55 @@ class SenderRepository {
 
   static getByEmail(email) {
 
-    return this
-      .getAll()
-      .find(sender =>
-        sender.email === email
-      );
+    const sheet = this.getSheet();
+
+    const values =
+      sheet.getDataRange().getValues();
+
+    for (let i = 1; i < values.length; i++) {
+
+      const row = values[i];
+
+      if (
+        row[Columns.SENDERS.EMAIL] !== email
+      ) {
+        continue;
+      }
+
+      return {
+
+        rowNumber: i + 1,
+
+        email: row[Columns.SENDERS.EMAIL],
+
+        status: row[Columns.SENDERS.STATUS],
+
+        dailyLimit: Number(
+          row[Columns.SENDERS.DAILY_LIMIT]
+        ),
+
+        sentToday: Number(
+          row[Columns.SENDERS.SENT_TODAY]
+        ),
+
+        warmupStage:
+          row[Columns.SENDERS.WARMUP_STAGE],
+
+        healthScore: Number(
+          row[Columns.SENDERS.HEALTH_SCORE]
+        ),
+
+        lastSent:
+          row[Columns.SENDERS.LAST_SENT],
+
+        lastReset:
+          row[Columns.SENDERS.LAST_RESET]
+
+      };
+
+    }
+
+    return null;
 
   }
 

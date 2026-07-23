@@ -275,26 +275,6 @@ class ApplicationRepository {
 
 }
 
-  static updateStatus(
-    rowNumber,
-    status
-  ) {
-
-    this.updateFields(
-      rowNumber,
-      {
-
-        [Columns.APPLICATIONS.STATUS]:
-          status,
-
-        [Columns.APPLICATIONS.UPDATED]:
-          new Date()
-
-      }
-    );
-
-  }
-
 
   static markSent(rowNumber) {
 
@@ -508,7 +488,7 @@ class ApplicationRepository {
         continue;
       }
 
-      Logger.log(
+      AppLogger.info(
         `Releasing expired claim: ${row[Columns.APPLICATIONS.COMPANY]}`
       );
 
@@ -571,13 +551,15 @@ class ApplicationRepository {
 
     for (const application of applications) {
 
-      Logger.log({
-        company: application.company,
-        status: application.status,
-        sentDate: application.sentDate,
-        lastFollowUp: application.lastFollowUp,
-        followUpCount: application.followUpCount
-    });
+      AppLogger.debug(
+          JSON.stringify({
+              company: application.company,
+              status: application.status,
+              sentDate: application.sentDate,
+              lastFollowUp: application.lastFollowUp,
+              followUpCount: application.followUpCount
+          })
+      );
 
       if (
         application.followUpCount >= 3

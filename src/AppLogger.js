@@ -19,7 +19,9 @@ class AppLogger {
   static debug(message) {
 
     // Later we'll read this from Config
-    const debugEnabled = true;
+    Config.get(
+        CONSTANTS.CONFIG_KEYS.DEBUG_MODE
+    )
 
     if (debugEnabled) {
       Logger.log(`[DEBUG] ${message}`);

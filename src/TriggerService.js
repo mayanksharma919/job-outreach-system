@@ -2,20 +2,33 @@ class TriggerService {
 
   static installScheduler() {
 
-    const handler =
-      "runScheduler";
+    this.createTrigger(
+      "runScheduler",
+      builder => builder.everyHours(1)
+    );
+
+  }
+
+  static installWorker() {
+
+    this.createTrigger(
+      "processNewApplications",
+      builder => builder.everyMinutes(5)
+    );
+
+  }
+
+  static createTrigger(handler, configure) {
 
     const triggers =
       ScriptApp.getProjectTriggers();
 
     for (const trigger of triggers) {
 
-      if (
-        trigger.getHandlerFunction() === handler
-      ) {
+      if (trigger.getHandlerFunction() === handler) {
 
         AppLogger.info(
-          "Scheduler trigger already exists."
+          `${handler} trigger already exists.`
         );
 
         return;
@@ -24,16 +37,24 @@ class TriggerService {
 
     }
 
-    ScriptApp.newTrigger(handler)
+    const trigger =
+      ScriptApp.newTrigger(handler)
+        .timeBased();
 
-      .timeBased()
-
-      .everyHours(1)
-
-      .create();
+    configure(trigger).create();
 
     AppLogger.info(
-      "Scheduler trigger created."
+      `${handler} trigger created.`
+    );
+
+  }
+
+
+  static installWorker() {
+
+    this.createTrigger(
+      "processNewApplications",
+      builder => builder.everyMinutes(5)
     );
 
   }

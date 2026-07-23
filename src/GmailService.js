@@ -98,19 +98,19 @@ class GmailService {
 
     }
 
-    Logger.log("========== THREADS FOUND ==========");
+    AppLogger.info("========== THREADS FOUND ==========");
 
     threads.forEach((thread, index) => {
 
       const message = thread.getMessages().slice(-1)[0];
 
-      Logger.log(`Thread ${index}`);
+      AppLogger.info(`Thread ${index}`);
 
-      Logger.log(`ThreadId: ${thread.getId()}`);
+     AppLogger.info(`ThreadId: ${thread.getId()}`);
 
-      Logger.log(`Subject: ${message.getSubject()}`);
+      AppLogger.info(`Subject: ${message.getSubject()}`);
 
-      Logger.log(`To: ${message.getTo()}`);
+      AppLogger.info(`To: ${message.getTo()}`);
 
     });
 

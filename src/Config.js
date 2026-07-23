@@ -30,7 +30,11 @@ class Config {
 
     for (let i = 1; i < values.length; i++) {
 
-      const configKey = String(values[i][0]).trim();
+      if (!values[i][0]) {
+
+          continue;
+
+      }
 
       const configValue = String(values[i][1]).trim();
 
@@ -38,7 +42,7 @@ class Config {
 
     }
 
-    Logger.log(
+    AppLogger.info(
       `Loaded ${Object.keys(Config._cache).length} configuration values.`
     );
 

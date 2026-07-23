@@ -1,25 +1,27 @@
 class SenderSelector {
 
+  static getCurrentSenderEmail() {
 
-  static currentSenderEmail = null;
+    if (!this._currentSenderEmail) {
 
-  static getCurrentSender() {
-
-    if (this.currentSender) {
-
-      return this.currentSender;
+      this._currentSenderEmail =
+        Config.get(
+          CONSTANTS.CONFIG_KEYS.SENDER_EMAIL
+        );
 
     }
+
+    return this._currentSenderEmail;
+
+  }
+
+  static getCurrentSender() {
 
     const email =
       this.getCurrentSenderEmail();
 
     const sender =
-      SenderRepository
-        .getAll()
-        .find(sender =>
-          sender.email === email
-        );
+      SenderRepository.getByEmail(email)
 
     if (!sender) {
 
@@ -28,8 +30,6 @@ class SenderSelector {
       );
 
     }
-
-    this.currentSender = sender;
 
     return sender;
 
@@ -51,20 +51,4 @@ class SenderSelector {
 
   }
 
-  static getCurrentSenderEmail() {
-
-    if (this.currentSenderEmail) {
-      return this.currentSenderEmail;
-    }
-
-    this.currentSenderEmail =
-      Config.get(
-        CONSTANTS.CONFIG_KEYS.SENDER_EMAIL
-      );
-
-    return this.currentSenderEmail;
-
-  }
-
 }
-

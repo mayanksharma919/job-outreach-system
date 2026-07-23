@@ -191,3 +191,24 @@ function refreshDashboard() {
   DashboardService.refresh();
 
 }
+
+
+function processNewApplications() {
+
+  ApplicationProcessor.processNewApplications();
+
+}
+
+
+function installWorker() {
+
+  WorkerInstallerService.install();
+
+}
+
+
+function install() {
+
+  InstallationService.install();
+
+}

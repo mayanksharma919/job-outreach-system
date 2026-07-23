@@ -2,37 +2,53 @@ class SpreadsheetService {
 
   static getSpreadsheet() {
 
-    return SpreadsheetApp.openById(
-      CONSTANTS.SPREADSHEET_ID
-    );
+    if (!this._spreadsheet) {
+
+      this._spreadsheet =
+        SpreadsheetApp.openById(
+          CONSTANTS.SPREADSHEET_ID
+        );
+
+    }
+
+    return this._spreadsheet;
 
   }
 
   static getSheet(sheetName) {
 
-    const spreadsheet = this.getSpreadsheet();
+    const spreadsheet =
+      this.getSpreadsheet();
 
-    const availableSheets = spreadsheet
-        .getSheets()
-        .map(sheet => sheet.getName());
-
-    Logger.log(
-        "Available Sheets: " +
-        availableSheets.join(", ")
-    );
-
-    const sheet = spreadsheet.getSheetByName(sheetName);
+    const sheet =
+      spreadsheet.getSheetByName(sheetName);
 
     if (!sheet) {
 
-        throw new Error(
+      const availableSheets =
+        spreadsheet
+          .getSheets()
+          .map(sheet => sheet.getName());
+
+      AppLogger.error(
+        `Sheet '${sheetName}' not found. Available sheets: ${availableSheets.join(", ")}`
+      );
+
+      throw new Error(
         `Sheet not found: ${sheetName}`
-        );
+      );
 
     }
 
     return sheet;
 
-    }
+  }
+
+  static clearCache() {
+
+    this._spreadsheet = null;
+
+  }
 
 }
+
