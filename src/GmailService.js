@@ -211,7 +211,11 @@ class GmailService {
       "me"
     );
 
-    Logger.log("Follow-up sent successfully.");
+    return {
+      success: true,
+      threadId: application.threadId,
+      sentAt: new Date()
+  };
   }
 
   static applyLabel(thread) {

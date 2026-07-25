@@ -46,6 +46,22 @@ class SenderSelector {
 
     }
 
+    AppLogger.info(
+      `Sender: ${sender.email}`
+    );
+
+    AppLogger.info(
+      `Status: ${sender.status}`
+    );
+
+    AppLogger.info(
+      `Sent Today: ${sender.sentToday}`
+    );
+
+    AppLogger.info(
+      `Daily Limit: ${sender.dailyLimit}`
+    );
+
     return sender.sentToday <
       sender.dailyLimit;
 

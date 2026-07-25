@@ -1,5 +1,11 @@
 class DeliverabilityService {
 
+  static canSendNow() {
+
+    return SenderSelector.canCurrentSenderSend();
+
+  }
+
   static canProcess(index) {
 
     const limit = Number(

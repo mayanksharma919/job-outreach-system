@@ -44,9 +44,7 @@ class WorkerStatusRepository {
     }
 
     const columns =
-      Object.keys(
-        CONSTANTS.WORKER_STATUS_COLUMN_COUNT
-      ).length;
+      Object.keys(CONSTANTS.WORKER_STATUS_COLUMNS).length;
 
     sheet.getRange(
       row,

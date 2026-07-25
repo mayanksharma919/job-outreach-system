@@ -11,8 +11,11 @@ class FollowUpProcessor {
       }
 
       const followUp =
-        FollowUpGenerator.generate(
-          application
+        EmailGenerator.generate(
+          application,
+          {
+            followUp: true
+          }
         );
 
       const result =
@@ -50,6 +53,9 @@ class FollowUpProcessor {
       ApplicationRepository.markFollowUpSent(
         application
       );
+
+      application.followUpCount++;
+      application.lastFollowUp = new Date();
 
       AppLogger.info(
         `Follow up sent: ${application.company}`

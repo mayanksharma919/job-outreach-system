@@ -174,54 +174,6 @@ class ApplicationRepository {
 
 }
 
-  static getPendingFollowUps() {
-
-  const maxFollowUps = Number(
-    Config.get(
-      CONSTANTS.CONFIG_KEYS.MAX_FOLLOW_UPS
-    )
-  );
-
-  const afterDays = Number(
-    Config.get(
-      CONSTANTS.CONFIG_KEYS.FOLLOW_UP_AFTER_DAYS
-    )
-  );
-
-  const today = new Date();
-
-  return this
-    .getSentApplications()
-    .filter(application => {
-
-      if (application.status === CONSTANTS.STATUS.REPLIED) {
-        return false;
-      }
-
-      if (
-        application.followUpCount >= maxFollowUps
-      ) {
-        return false;
-      }
-
-      const referenceDate =
-        application.lastFollowUp ||
-        application.sentDate;
-
-      if (!referenceDate) {
-        return false;
-      }
-
-      const days =
-        (today - new Date(referenceDate))
-        / (1000 * 60 * 60 * 24);
-
-      return days >= afterDays;
-
-    });
-
-}
-
   static markDraftCreated(
   rowNumber,
   senderEmail,
@@ -562,61 +514,6 @@ class ApplicationRepository {
     }
 
     return applications;
-
-  }
-
-  static getApplicationsReadyForFollowUp() {
-
-    const applications =
-      this.getApplicationsByStatus(
-        CONSTANTS.STATUS.SENT
-      );
-
-    const now = new Date();
-
-    const ready = [];
-
-    for (const application of applications) {
-
-      AppLogger.debug(
-          JSON.stringify({
-              company: application.company,
-              status: application.status,
-              sentDate: application.sentDate,
-              lastFollowUp: application.lastFollowUp,
-              followUpCount: application.followUpCount
-          })
-      );
-
-      if (
-        application.followUpCount >= 3
-      ) {
-        continue;
-      }
-
-      const lastActivity =
-        application.lastFollowUp ||
-        application.sentDate;
-
-      if (!lastActivity) {
-        continue;
-      }
-
-      const days =
-        Math.floor(
-          (now - new Date(lastActivity))
-          / (1000 * 60 * 60 * 24)
-        );
-
-      if (days < 5) {
-        continue;
-      }
-
-      ready.push(application);
-
-    }
-
-    return ready;
 
   }
 

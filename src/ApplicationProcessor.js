@@ -2,12 +2,14 @@ class ApplicationProcessor {
 
   static processNewApplications() {
 
+    StartupValidationService.validate();
+
     try {
 
       if (!DeliverabilityService.canSendNow()) {
 
         AppLogger.info(
-          "Outside configured sending hours."
+          "Current sender is not allowed to send."
         );
 
         return;
@@ -158,7 +160,14 @@ class ApplicationProcessor {
           DeliverabilityService.sleepBetweenEmails();
 
           AppLogger.info(
-            `Processed ${application.company} (${result.status})`
+            `Processed ${application.company}
+            [${result.status}]
+            Draft=${result.id}
+            Thread=${result.threadId}`
+          );
+
+          AppLogger.info(
+            `Processed ${application.company}`
           );
 
         }

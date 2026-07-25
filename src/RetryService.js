@@ -24,7 +24,7 @@ class RetryService {
 
           success: true,
 
-          value: result
+          ...result
 
         };
 

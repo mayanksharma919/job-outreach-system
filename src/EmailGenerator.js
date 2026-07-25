@@ -1,24 +1,33 @@
 class EmailGenerator {
 
-  static generate(application) {
+  static generate(application, options = {}) {
 
     const context = ContextBuilder.build(application);
+
+    const isFollowUp = options.followUp === true;
+
+    const followUpNumber = application.followUpCount + 1;
 
     if (!GeminiAvailability.isAvailable()) {
 
       return TemplateEmailGenerator.generate(
         application,
-        context
+        context,
+        options
       );
 
     }
 
     try {
 
-      const prompt = PromptBuilder.build(
-        application,
-        context
-      );
+      const prompt = isFollowUp
+        ? PromptBuilder.buildFollowUp(
+            application,
+            followUpNumber
+          )
+        : PromptBuilder.build(
+            application
+          );
 
       const response =
         GeminiService.generate(prompt);
@@ -33,11 +42,11 @@ class EmailGenerator {
 
       return TemplateEmailGenerator.generate(
         application,
-        context
+        context,
+        options
       );
 
     }
 
   }
-
 }

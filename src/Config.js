@@ -31,11 +31,10 @@ class Config {
     for (let i = 1; i < values.length; i++) {
 
       if (!values[i][0]) {
-
-          continue;
-
+        continue;
       }
 
+      const configKey = String(values[i][0]).trim();
       const configValue = String(values[i][1]).trim();
 
       Config._cache[configKey] = configValue;
