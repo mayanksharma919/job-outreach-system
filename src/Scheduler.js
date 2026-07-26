@@ -1,49 +1,54 @@
 class Scheduler {
+    
 
   static run() {
 
-    const monitor = SystemMonitor.start();
+    // Process new applications first
+        ApplicationProcessor.processNewApplications();
 
-    try {
+        const monitor = SystemMonitor.start();
 
-        const applications =
-        ApplicationRepository.getActiveApplications();
+        try {
 
-        monitor.applicationsProcessed = applications.length;
+            const applications =
+                ApplicationRepository.getActiveApplications();
 
-        for (const application of applications) {
+            monitor.applicationsProcessed =
+                applications.length;
 
-            if (ReplyProcessor.process(application)) {
-                monitor.repliesFound++;
+            for (const application of applications) {
+
+                if (ReplyProcessor.process(application)) {
+                    monitor.repliesFound++;
+                }
+
+                if (BounceProcessor.process(application)) {
+                    monitor.bouncesFound++;
+                }
+
+                if (FollowUpProcessor.process(application)) {
+                    monitor.emailsSent++;
+                }
+
             }
 
-            if (BounceProcessor.process(application)) {
-                monitor.bouncesFound++;
-            }
+            SystemMonitor.finish(
+                monitor,
+                "SUCCESS"
+            );
 
-            if (FollowUpProcessor.process(application)) {
-                monitor.emailsSent++;
-            }
+        } catch (error) {
+
+            monitor.errors++;
+
+            SystemMonitor.finish(
+                monitor,
+                "FAILED"
+            );
+
+            throw error;
 
         }
-
-        SystemMonitor.finish(
-        monitor,
-        "SUCCESS"
-        );
-
-    } catch (error) {
-
-        monitor.errors++;
-
-        SystemMonitor.finish(
-        monitor,
-        "FAILED"
-        );
-
-        throw error;
-
-    }
 
     }
 

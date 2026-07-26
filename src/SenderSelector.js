@@ -4,15 +4,21 @@ class SenderSelector {
 
     if (!this._currentSenderEmail) {
 
-      this._currentSenderEmail =
-        Config.get(
-          CONSTANTS.CONFIG_KEYS.SENDER_EMAIL
+      const email = PropertiesService
+        .getScriptProperties()
+        .getProperty(CONSTANTS.CONFIG_KEYS.SENDER_EMAIL);
+
+      if (!email) {
+        throw new Error(
+          "SENDER_EMAIL missing from Script Properties."
         );
+      }
+
+      this._currentSenderEmail = email.trim();
 
     }
 
     return this._currentSenderEmail;
-
   }
 
   static getCurrentSender() {
@@ -21,7 +27,7 @@ class SenderSelector {
       this.getCurrentSenderEmail();
 
     const sender =
-      SenderRepository.getByEmail(email)
+      SenderRepository.getByEmail(email);
 
     if (!sender) {
 
@@ -29,6 +35,18 @@ class SenderSelector {
         `Current sender '${email}' is not configured.`
       );
 
+    }
+
+    // Safety check
+    const actualEmail = Session.getEffectiveUser().getEmail();
+
+    if (
+      actualEmail.toLowerCase() !==
+      sender.email.toLowerCase()
+    ) {
+      throw new Error(
+        `Configured sender (${sender.email}) does not match executing account (${actualEmail}).`
+      );
     }
 
     return sender;

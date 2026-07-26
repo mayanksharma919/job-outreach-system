@@ -85,7 +85,7 @@ class GmailService {
     Utilities.sleep(2000);
 
     const threads = GmailApp.search(
-      `to:${application.recipientEmail} newer_than:1d`,
+      `to:${application.recipientEmail} subject:"${email.subject}" newer_than:1d`,
       0,
       5
     );

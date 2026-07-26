@@ -13,3 +13,8 @@ function testConfig() {
   );
 
 }
+
+
+function testSenderConfiguration() {
+  Logger.log(SenderSelector.getCurrentSenderEmail());
+}
