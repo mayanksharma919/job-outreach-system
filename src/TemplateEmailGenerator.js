@@ -3,41 +3,48 @@ class TemplateEmailGenerator {
   static generate(application, context, options = {}) {
 
     if (options.followUp === true) {
-      return this.generateFollowUp(application, context);
+        return this.generateFollowUp(application, context);
     }
 
-    const candidate = context.candidate;
+    const tag = (application.recipientTag || "").toUpperCase();
 
-    const subject =
-      `${application.jobTitle} Application - ${candidate.name}`;
+    switch (tag) {
 
-    const body = `Hi ${application.recipientName},
+        case CONSTANTS.RECIPIENT_TAG.RECRUITER.toUpperCase():
+            return this.generateRecruiter(application, context);
 
-I recently submitted my application for the ${application.jobTitle} position at ${application.company} and wanted to introduce myself.
+        case CONSTANTS.RECIPIENT_TAG.EXECUTIVE.toUpperCase():
+        case CONSTANTS.RECIPIENT_TAG.HIRING_MANAGER.toUpperCase():
+            return this.generateExecutive(application, context);
 
-I have ${candidate.experienceYears} years of experience as a Data Engineer, with hands-on experience in ${context.matchedSkills.join(", ")}.
+        case CONSTANTS.RECIPIENT_TAG.REFERRAL.toUpperCase():
+            return this.generateReferral(application, context);
 
-My recent work includes:
-${context.matchedProjects.map(p => "- " + p.summary).join("\n")}
+        default:
+            return this.generateRecruiter(application, context);
 
-I noticed your role mentions ${context.matchedSkills.slice(0,3).join(", ")}, which aligns closely with my experience.
+    }
 
-I would appreciate the opportunity to be considered if my profile matches what your team is looking for.
+}
 
-English is my primary working language. I am currently at German level ${candidate.germanLevel} and actively progressing toward B1 and then C1.
+  static buildSubject(application) {
 
-Thank you for your time.
+    return `${application.jobTitle} at ${application.company}`;
 
-Kind regards,
+}
 
-${candidate.name}`;
+  static germanParagraph(candidate) {
 
-    return {
-      subject,
-      body
-    };
+    if (!candidate.germanLevel) {
+        return "";
+    }
 
-  }
+    return `
+
+English has been my primary working language, and I'm currently at German level ${candidate.germanLevel}, actively working toward B1 and C1.
+`;
+
+}
 
   static generateFollowUp(application, context) {
 
@@ -104,6 +111,90 @@ ${candidate.name}`;
     return {
       subject: "",
       body
+    };
+
+  }
+
+  static generateRecruiter(application, context) {
+
+    const candidate = context.candidate;
+
+    return {
+
+        subject: this.buildSubject(application),
+
+        body: `Hi ${application.recipientName},
+
+I recently applied for the ${application.jobTitle} position at ${application.company} and wanted to introduce myself as well.
+
+Over the past ${candidate.experienceYears} years, I've been working on cloud-based data engineering projects involving ${context.matchedSkills.slice(0,3).join(", ")}. Several aspects of this role closely match the kind of work I've been doing, which is what encouraged me to apply.
+
+${this.germanParagraph(candidate)}
+
+If my background seems relevant, I'd be happy to have a conversation.
+
+Thank you for your time.
+
+Kind regards,
+
+${candidate.name}`
+
+    };
+
+  }
+
+static generateExecutive(application, context) {
+
+    const candidate = context.candidate;
+
+    return {
+
+        subject: this.buildSubject(application),
+
+        body: `Hi ${application.recipientName},
+
+I recently applied for the ${application.jobTitle} opportunity at ${application.company} and thought I'd introduce myself directly.
+
+Over the last ${candidate.experienceYears} years, I've worked on building and modernizing cloud data platforms that support large-scale analytics and business decision making. When I read the role, it felt closely aligned with the kind of challenges I've been solving.
+
+${this.germanParagraph(candidate)}
+
+If you think my background could be a good fit for your team, I'd be glad to have a conversation.
+
+Thank you for your time.
+
+Kind regards,
+
+${candidate.name}`
+
+    };
+
+  }
+
+  static generateReferral(application, context) {
+
+    const candidate = context.candidate;
+
+    return {
+
+        subject: this.buildSubject(application),
+
+        body: `Hi ${application.recipientName},
+
+I recently applied for the ${application.jobTitle} position at ${application.company} and came across your profile while learning more about the team.
+
+Over the last ${candidate.experienceYears} years, I've been working on cloud data engineering projects that seem closely related to the work your team does.
+
+${this.germanParagraph(candidate)}
+
+From your perspective, does my background seem like a good fit for the role? If so, I'd really appreciate any advice you might have.
+
+Thanks for taking the time to read this.
+
+Kind regards,
+
+${candidate.name}`
+
     };
 
   }

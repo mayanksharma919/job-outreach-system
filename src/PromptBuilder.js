@@ -4,6 +4,12 @@ class PromptBuilder {
 
     const context = ContextBuilder.build(application);
 
+     const recipientInstructions =
+        this.getRecipientInstructions(
+            application.recipientTag
+        );
+
+
     return `
 You are Mayank Sharma.
 
@@ -12,7 +18,8 @@ Do NOT behave like an AI assistant.
 Write exactly as if Mayank personally sat down and wrote this email after applying for this job.
 
 The objective is NOT to sell.
-The objective is to start a conversation with the recruiter.
+
+The objective is to start a genuine professional conversation with the recipient.
 
 --------------------------------------------------
 Candidate
@@ -45,6 +52,14 @@ ${application.company}
 
 Job Title:
 ${application.jobTitle}
+
+
+--------------------------------------------------
+Recipient Guidance
+--------------------------------------------------
+
+${recipientInstructions} 
+
 
 --------------------------------------------------
 Job Description
@@ -86,7 +101,7 @@ Mention it only once near the end.
 Writing Instructions
 --------------------------------------------------
 
-Assume the recruiter receives hundreds of emails every week.
+Assume the recipient receives hundreds of professional emails every week.
 
 Your email should feel like it was personally written in under five minutes.
 
@@ -207,6 +222,11 @@ Anything except the email body.
 
     const context = ContextBuilder.build(application);
 
+    const recipientInstructions =
+        this.getRecipientInstructions(
+            application.recipientTag
+        );
+
     let followUpInstructions = "";
 
     switch (followUpNumber) {
@@ -216,7 +236,7 @@ Anything except the email body.
         followUpInstructions = `
   This is the FIRST follow-up.
 
-  Assume the recruiter simply hasn't had time to respond.
+  Assume the recipient simply hasn't had time to respond.
 
   Do NOT sound impatient.
 
@@ -240,7 +260,7 @@ Anything except the email body.
 
   Keep the tone confident but relaxed.
 
-  Do not pressure the recruiter.
+  Do not pressure the recipient.
   `;
 
         break;
@@ -250,7 +270,7 @@ Anything except the email body.
         followUpInstructions = `
   This is the FINAL follow-up.
 
-  Assume the recruiter is busy.
+  Assume the recipient is busy.
 
   Be respectful.
 
@@ -258,7 +278,7 @@ Anything except the email body.
 
   Leave a positive final impression.
 
-  Never guilt the recruiter.
+  Never guilt the recipient.
   `;
 
     }
@@ -266,7 +286,7 @@ Anything except the email body.
     return `
   You are continuing an existing email conversation.
 
-  The recruiter has already received Mayank's original email.
+  The recipient has already received Mayank's original email.
 
   This is follow-up #${followUpNumber}.
 
@@ -285,11 +305,20 @@ Anything except the email body.
   Company:
   ${application.company}
 
-  Role:
-  ${application.jobTitle}
+ Role:
+${application.jobTitle}
 
-  Relevant Skills:
-  ${context.matchedSkills.join(", ")}
+--------------------------------------------------
+Recipient Guidance
+--------------------------------------------------
+
+${recipientInstructions}
+
+--------------------------------------------------
+Relevant Skills
+--------------------------------------------------
+
+${context.matchedSkills.join(", ")}
 
   Relevant Projects:
   ${context.matchedProjects
@@ -330,6 +359,65 @@ Anything except the email body.
 
   Return ONLY the email body.
   `;
+
+  }
+
+
+  static getRecipientInstructions(tag) {
+
+      const recipientTag = (tag || "").toUpperCase();
+
+      switch (recipientTag) {
+
+          case CONSTANTS.RECIPIENT_TAG.RECRUITER.toUpperCase():
+
+              return `
+      The recipient is a recruiter.
+
+      Their responsibility is screening candidates.
+
+      Quickly explain why Mayank appears to be a strong fit.
+
+      Keep the email concise and easy to scan.
+
+      Do not discuss deep technical details.
+
+      The objective is to encourage the recruiter to schedule an interview.
+      `;
+
+          case CONSTANTS.RECIPIENT_TAG.EXECUTIVE.toUpperCase():
+          case CONSTANTS.RECIPIENT_TAG.HIRING_MANAGER.toUpperCase():
+
+              return `
+      The recipient is a hiring manager or senior leader.
+
+      Write peer-to-peer.
+
+      Focus on business outcomes and impact rather than technologies.
+
+      Do not sound like you are asking for a favour.
+
+      The objective is simply to start a conversation.
+      `;
+
+          case CONSTANTS.RECIPIENT_TAG.REFERRAL.toUpperCase():
+
+              return `
+      The recipient is an employee.
+
+      Do NOT directly ask for a referral.
+
+      Instead ask whether Mayank's background seems like a good fit for the team.
+
+      If they think it is, they may naturally choose to refer him.
+
+      Keep the tone friendly and conversational.
+      `;
+
+          default:
+              return "";
+
+      }
 
   }
 
