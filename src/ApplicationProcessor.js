@@ -8,9 +8,12 @@ class ApplicationProcessor {
 
       if (!DeliverabilityService.canSendNow()) {
 
+        const sender = SenderSelector.getCurrentSender();
+
         AppLogger.info(
-          "Current sender is not allowed to send."
+            `Sender ${sender.email} has reached its daily limit (${sender.sentToday}/${sender.dailyLimit}).`
         );
+
 
         return;
 

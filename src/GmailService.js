@@ -67,6 +67,39 @@ class GmailService {
 
     const resumeBlob = ResumeService.getBlob();
 
+    Logger.log("Resume Name: " + resumeBlob.getName());
+    Logger.log("Resume Size: " + resumeBlob.getBytes().length);
+    Logger.log("Resume Content Type: " + resumeBlob.getContentType());
+
+    const currentUser =
+      Session.getEffectiveUser().getEmail().trim().toLowerCase();
+
+    const configuredSender =
+      SenderSelector.getCurrentSenderEmail().trim().toLowerCase();
+
+if (currentUser !== configuredSender) {
+  throw new Error(
+    `Configured sender ${configuredSender} does not match executing user ${currentUser}`
+  );
+}
+
+
+    if (Config.get(CONSTANTS.CONFIG_KEYS.DRY_RUN) === "TRUE") {
+
+      AppLogger.warn("========== DRY RUN ==========");
+      AppLogger.info(
+        `To: ${application.recipientEmail}`
+      );
+      AppLogger.info(`Subject: ${email.subject}`);
+      AppLogger.info(email.body);
+
+      return {
+        success: true,
+        dryRun: true
+      };
+
+    }
+
     GmailApp.sendEmail(
 
       application.recipientEmail,
@@ -82,10 +115,10 @@ class GmailService {
     );
 
     // Find the message we just sent
-    Utilities.sleep(2000);
+    Utilities.sleep(3000);
 
     const threads = GmailApp.search(
-      `to:${application.recipientEmail} subject:"${email.subject}" newer_than:1d`,
+      `to:${application.recipientEmail} subject:"${email.subject}" in:sent newer_than:1d`,  
       0,
       5
     );
@@ -114,7 +147,19 @@ class GmailService {
 
     });
 
-    const thread = threads[0];
+    const thread = threads.reduce((latest, current) => {
+
+    const latestDate =
+      latest.getLastMessageDate().getTime();
+
+    const currentDate =
+      current.getLastMessageDate().getTime();
+
+    return currentDate > latestDate
+      ? current
+      : latest;
+
+  });
 
     this.applyLabel(thread);
 

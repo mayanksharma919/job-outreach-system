@@ -53,34 +53,60 @@ class GeminiService {
 
     const response = Retry.execute(() => {
 
-      return UrlFetchApp.fetch(url, options);
+      const response = UrlFetchApp.fetch(url, options);
+
+      const code = response.getResponseCode();
+
+      // Retry only transient server errors
+      if ([408, 500, 502, 503, 504].includes(code)) {
+        throw new Error(`Retryable Gemini HTTP ${code}`);
+      }
+
+      return response;
 
     }, Number(
-        Config.get(CONSTANTS.CONFIG_KEYS.MAX_RETRIES)
+      Config.get(CONSTANTS.CONFIG_KEYS.MAX_RETRIES)
     ));
 
     const elapsed = Date.now() - start;
 
     const code = response.getResponseCode();
 
-    AppLogger.info(`Gemini HTTP ${code}`);
-    AppLogger.info(`Gemini Time ${elapsed} ms`);
+    AppLogger.info(`Gemini Model: ${model}`);
+    AppLogger.info(`Gemini HTTP: ${code}`);
+    AppLogger.info(`Gemini Time: ${elapsed} ms`);
 
-    if (code !== 200) {
+    switch (code) {
 
-      if (code === 429 || code === 503) {
+      case 200:
+        break;
 
+      case 429:
         GeminiAvailability.disable();
 
-      }
+        AppLogger.warn(
+          "Gemini quota exceeded. Falling back to default email."
+        );
 
-      AppLogger.error(response.getContentText());
+        throw new Error("Gemini quota exceeded.");
 
-      throw new Error(response.getContentText());
+      case 401:
+        AppLogger.error(response.getContentText());
+        throw new Error("Invalid Gemini API key.");
+
+      case 403:
+        AppLogger.error(response.getContentText());
+        throw new Error("Gemini access denied.");
+
+      default:
+        AppLogger.error(response.getContentText());
+        throw new Error(`Gemini HTTP ${code}`);
 
     }
 
-    const json = JSON.parse(response.getContentText());
+    const json = JSON.parse(
+      response.getContentText()
+    );
 
     if (
       !json.candidates ||
@@ -90,22 +116,25 @@ class GeminiService {
       !json.candidates[0].content.parts.length
     ) {
 
-      throw new Error("Gemini returned an empty response.");
+      throw new Error(
+        "Gemini returned an empty response."
+      );
 
     }
 
-    const text = json.candidates[0].content.parts[0].text;
+    const text =
+      json.candidates[0].content.parts[0].text;
 
-    if (!text) {
+    if (!text || !text.trim()) {
 
-      throw new Error("Gemini returned empty text.");
+      throw new Error(
+        "Gemini returned empty text."
+      );
 
     }
 
-    return text;
+    return text.trim();
 
   }
 
 }
-
-

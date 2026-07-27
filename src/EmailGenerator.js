@@ -32,7 +32,15 @@ class EmailGenerator {
       const response =
         GeminiService.generate(prompt);
 
-      return ResponseParser.parse(response);
+        AppLogger.info("========== GEMINI RAW RESPONSE ==========");
+        AppLogger.info(response);
+
+      const parsed = ResponseParser.parse(response);
+
+      return {
+        subject: `Application for ${application.jobTitle}`,
+        body: parsed.body
+      };
 
     } catch (error) {
 
