@@ -67,3 +67,15 @@ function debugResumeFile() {
   Logger.log("Mime Type: " + file.getMimeType());
 
 }
+
+
+function testSpreadsheet() {
+
+  const id =
+    PropertiesService
+      .getScriptProperties()
+      .getProperty("SPREADSHEET_ID");
+
+  Logger.log(id);
+
+}

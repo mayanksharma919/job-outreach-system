@@ -41,7 +41,7 @@ class StartupValidationService {
     ];
 
     const spreadsheet =
-      SpreadsheetApp.getActiveSpreadsheet();
+      SpreadsheetService.getSpreadsheet();
 
     const existingSheets =
       spreadsheet

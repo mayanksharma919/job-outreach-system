@@ -22,6 +22,7 @@ class CandidateKnowledge {
         dataEngineering: [
           "Azure Data Factory",
           "Azure Databricks",
+          "Databricks",
           "Azure Synapse",
           "ADLS",
           "Snowflake",
@@ -30,7 +31,11 @@ class CandidateKnowledge {
           "PySpark",
           "Delta Lake",
           "SQL",
-          "Python"
+          "Python",
+          "Treasure Data",
+          "CDP",
+          "Terraform",
+          "Docker"
         ],
 
         orchestration: [

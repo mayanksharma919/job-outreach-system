@@ -1,11 +1,30 @@
 class TemplateEmailGenerator {
 
+  static getLanguageSection() {
+
+    return `I've worked primarily in English-speaking teams and I'm currently progressing from A2 toward B1/C1 German.`;
+
+  }
+
+  static getSignature() {
+
+    return `
+
+Kind regards,
+
+Mayank Sharma`;
+
+  }
+
   static generate(application, context, options = {}) {
+
+    AppLogger.info(JSON.stringify(application));
 
     if (options.followUp === true) {
         return this.generateFollowUp(application, context);
     }
-
+    
+    AppLogger.info("Recipient Tag: " + application.recipientTag);
     const tag = (application.recipientTag || "").toUpperCase();
 
     switch (tag) {
@@ -117,55 +136,63 @@ ${candidate.name}`;
 
   static generateRecruiter(application, context) {
 
-    const candidate = context.candidate;
+    const language =
+      this.getLanguageSection();
+
+    const signature =
+      this.getSignature();
 
     return {
 
-        subject: this.buildSubject(application),
+      subject:
+        `Application for ${application.jobTitle}`,
 
-        body: `Hi ${application.recipientName},
+      body:
+  `Hi ${application.recipientName},
 
-I recently applied for the ${application.jobTitle} position at ${application.company} and wanted to introduce myself as well.
+I recently applied for the ${application.jobTitle} position at ${application.company} and wanted to briefly introduce myself.
 
-Over the past ${candidate.experienceYears} years, I've been working on cloud-based data engineering projects involving ${context.matchedSkills.slice(0,3).join(", ")}. Several aspects of this role closely match the kind of work I've been doing, which is what encouraged me to apply.
+Over the past ${context.candidate.experienceYears} years, I've built cloud-based data platforms using technologies such as ${context.matchedSkills.join(", ")}. The responsibilities outlined in the role closely match the type of work I've been doing, which is what encouraged me to apply.
 
-${this.germanParagraph(candidate)}
+${language}
 
-If my background seems relevant, I'd be happy to have a conversation.
+If my background aligns with what you're looking for, I'd really appreciate the opportunity to speak with the hiring team.
 
 Thank you for your time.
 
-Kind regards,
-
-${candidate.name}`
+${signature}`
 
     };
 
   }
 
-static generateExecutive(application, context) {
+  static generateExecutive(application, context) {
 
-    const candidate = context.candidate;
+    const language =
+      this.getLanguageSection();
+
+    const signature =
+      this.getSignature();
 
     return {
 
-        subject: this.buildSubject(application),
+      subject:
+        `${application.jobTitle} - Introduction`,
 
-        body: `Hi ${application.recipientName},
+      body:
+  `Hi ${application.recipientName},
 
-I recently applied for the ${application.jobTitle} opportunity at ${application.company} and thought I'd introduce myself directly.
+I recently came across your team's ${application.jobTitle} opening at ${application.company}, and it immediately caught my attention because much of my recent work has involved solving similar data engineering challenges.
 
-Over the last ${candidate.experienceYears} years, I've worked on building and modernizing cloud data platforms that support large-scale analytics and business decision making. When I read the role, it felt closely aligned with the kind of challenges I've been solving.
+Over the past ${context.candidate.experienceYears} years, I've designed and modernized cloud data platforms across Azure and Snowflake, working closely with analytics and business teams to deliver scalable solutions.
 
-${this.germanParagraph(candidate)}
+${language}
 
-If you think my background could be a good fit for your team, I'd be glad to have a conversation.
+The role genuinely feels like a strong match for my experience, so I wanted to introduce myself directly. If you have a few minutes, I'd be glad to connect.
 
 Thank you for your time.
 
-Kind regards,
-
-${candidate.name}`
+${signature}`
 
     };
 
@@ -173,27 +200,31 @@ ${candidate.name}`
 
   static generateReferral(application, context) {
 
-    const candidate = context.candidate;
+    const language =
+      this.getLanguageSection();
+
+    const signature =
+      this.getSignature();
 
     return {
 
-        subject: this.buildSubject(application),
+      subject:
+        `Quick question about ${application.company}`,
 
-        body: `Hi ${application.recipientName},
+      body:
+  `Hi ${application.recipientName},
 
-I recently applied for the ${application.jobTitle} position at ${application.company} and came across your profile while learning more about the team.
+I recently applied for the ${application.jobTitle} role at ${application.company}, and while learning more about the team I came across your profile.
 
-Over the last ${candidate.experienceYears} years, I've been working on cloud data engineering projects that seem closely related to the work your team does.
+Over the past ${context.candidate.experienceYears} years, I've been working on cloud data engineering projects involving ${context.matchedSkills.join(", ")}, and the role seemed like a strong fit for my background.
 
-${this.germanParagraph(candidate)}
+${language}
 
-From your perspective, does my background seem like a good fit for the role? If so, I'd really appreciate any advice you might have.
+Since you're already part of the team, I was curious whether my experience sounds like the kind that's valued there. I'd really appreciate any advice you might have about the role or the hiring process.
 
-Thanks for taking the time to read this.
+Thanks for taking the time to read my message.
 
-Kind regards,
-
-${candidate.name}`
+${signature}`
 
     };
 

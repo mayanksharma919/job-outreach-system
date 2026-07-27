@@ -212,3 +212,8 @@ function install() {
   InstallationService.install();
 
 }
+
+
+function validateSystem() {
+  StartupValidationService.validate();
+}

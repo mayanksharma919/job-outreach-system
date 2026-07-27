@@ -32,6 +32,9 @@ class EmailGenerator {
       const response =
         GeminiService.generate(prompt);
 
+        AppLogger.info("========== PROMPT ==========");
+        AppLogger.info(prompt);
+
         AppLogger.info("========== GEMINI RAW RESPONSE ==========");
         AppLogger.info(response);
 
@@ -47,6 +50,9 @@ class EmailGenerator {
       AppLogger.warn(
         "Gemini unavailable. Using template generator."
       );
+      
+
+      AppLogger.info(JSON.stringify(context));
 
       return TemplateEmailGenerator.generate(
         application,

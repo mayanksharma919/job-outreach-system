@@ -52,7 +52,7 @@ class ApplicationRepository {
     recipientEmail:
       row[Columns.APPLICATIONS.RECIPIENT_EMAIL],
 
-    recipientRole:
+    recipientTag:
       row[Columns.APPLICATIONS.RECIPIENT_ROLE],
 
     appliedDate:
@@ -322,6 +322,20 @@ class ApplicationRepository {
 
   static claimNextApplication(senderEmail) {
 
+    const lock = LockService.getDocumentLock();
+
+    if (!lock.tryLock(5000)) {
+
+    AppLogger.info(
+        `Could not obtain queue lock for ${senderEmail}.`
+    );
+
+    return null;
+
+}
+
+    try {
+
     const sheet = this.getSheet();
 
     const values = sheet.getDataRange().getValues();
@@ -412,21 +426,30 @@ class ApplicationRepository {
           1,
           1,
           row.length
-        )
-        .setValues([row]);
+      ).setValues([row]);
 
       SpreadsheetApp.flush();
 
-      return this.mapRow(
-        row,
-        i + 1
-      );
+      const application =
+          this.mapRow(
+              row,
+              i + 1
+          );
+
+      return application;
 
     }
 
     return null;
 
   }
+  finally {
+
+    lock.releaseLock();
+
+  }
+
+}
 
   static generateClaimToken() {
 
