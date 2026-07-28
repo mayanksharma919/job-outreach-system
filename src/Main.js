@@ -11,12 +11,6 @@ function processDraftStatuses() {
 
 }
 
-function processFollowUps() {
-
-  FollowUpProcessor.process();
-
-}
-
 function updateReplies() {
 
   const applications =
