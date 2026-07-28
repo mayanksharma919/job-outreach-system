@@ -22,7 +22,9 @@ const CONSTANTS = {
 
     SYSTEM: "System",
 
-    WORKER_STATUS: "WORKER_STATUS"
+    WORKER_STATUS: "WORKER_STATUS",
+
+    QUEUE_HEALTH: "QUEUE_HEALTH"
 
   },
 

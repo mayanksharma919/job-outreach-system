@@ -332,13 +332,17 @@ class ApplicationRepository {
 
   static claimNextApplication(senderEmail) {
 
-    const lock = LockService.getDocumentLock();
+    const lock = LockService.getScriptLock();
 
     if (!lock.tryLock(5000)) {
 
     AppLogger.info(
         `Could not obtain queue lock for ${senderEmail}.`
     );
+
+    AppLogger.info(
+        `Claimed row ${rowNumber} by ${senderEmail}`
+      );
 
     return null;
 

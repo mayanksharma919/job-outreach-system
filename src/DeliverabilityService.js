@@ -2,9 +2,55 @@ class DeliverabilityService {
 
   static canSendNow() {
 
+    this.resetCountersIfNewDay();
+
     return SenderSelector.canCurrentSenderSend();
 
-  }
+}
+
+
+  static resetCountersIfNewDay() {
+
+    const senders =
+        SenderRepository.getAll();
+
+    if (!senders.length) {
+        return;
+    }
+
+    const today = new Date();
+
+    const lastReset = senders[0].lastReset;
+
+    if (!lastReset) {
+
+        SenderRepository.resetDailyCounters();
+
+        AppLogger.info(
+            "Daily sender counters initialized."
+        );
+
+        return;
+
+    }
+
+    const last = new Date(lastReset);
+
+    if (
+        today.getFullYear() !== last.getFullYear() ||
+        today.getMonth() !== last.getMonth() ||
+        today.getDate() !== last.getDate()
+    ) {
+
+        SenderRepository.resetDailyCounters();
+
+        AppLogger.info(
+            "Daily sender counters reset."
+        );
+
+    }
+
+}
 
   static canProcess(index) {
 

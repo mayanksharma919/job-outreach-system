@@ -112,23 +112,26 @@ class SenderRepository {
 
     const sheet = this.getSheet();
 
-    this.getAll().forEach(sender => {
+    const values = sheet.getDataRange().getValues();
 
-      sheet.getRange(
-        sender.rowNumber,
-        ColumnHelper.sheet(
-          Columns.SENDERS.SENT_TODAY
-        )
-      ).setValue(0);
+    const now = new Date();
 
-      sheet.getRange(
-        sender.rowNumber,
-        ColumnHelper.sheet(
-          Columns.SENDERS.LAST_RESET
-        )
-      ).setValue(new Date());
+    for (let i = 1; i < values.length; i++) {
 
-    });
+      values[i][Columns.SENDERS.SENT_TODAY] = 0;
+
+      values[i][Columns.SENDERS.LAST_RESET] = now;
+
+    }
+
+    sheet
+      .getRange(
+        1,
+        1,
+        values.length,
+        values[0].length
+      )
+      .setValues(values);
 
   }
 

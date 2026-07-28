@@ -207,6 +207,12 @@ function install() {
 
 }
 
+function queueHealth() {
+
+  QueueHealthService.run();
+
+}
+
 
 function validateSystem() {
   StartupValidationService.validate();

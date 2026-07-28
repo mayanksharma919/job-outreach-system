@@ -32,6 +32,8 @@ class Scheduler {
 
             }
 
+            QueueHealthService.run();
+
             SystemMonitor.finish(
                 monitor,
                 "SUCCESS"
