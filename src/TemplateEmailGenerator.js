@@ -11,7 +11,6 @@ class TemplateEmailGenerator {
     return `
 
 Kind regards,
-
 Mayank Sharma`;
 
   }
@@ -142,6 +141,11 @@ ${candidate.name}`;
     const signature =
       this.getSignature();
 
+    const skills =
+      context.matchedSkills.length > 0
+        ? context.matchedSkills.join(", ")
+        : "AWS, Azure, Python, Spark, SQL, Snowflake, dbt, ETL, ELT, Data Warehouse, Azure Data Factory and Airflow";
+
     return {
 
       subject:
@@ -151,11 +155,6 @@ ${candidate.name}`;
   `Hi ${application.recipientName},
 
 I recently applied for the ${application.jobTitle} position at ${application.company} and wanted to briefly introduce myself.
-
-const skills =
-  context.matchedSkills.length > 0
-    ? context.matchedSkills.join(", ")
-    : "AWS, Azure, Spark, SQL and Python";
 
 Over the past ${context.candidate.experienceYears} years, I've built cloud-based data platforms using technologies such as ${skills} across AWS and Azure environments.  
 

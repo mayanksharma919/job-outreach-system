@@ -281,6 +281,9 @@ class ApplicationRepository {
             [Columns.APPLICATIONS.SENT_DATE]:
                 now,
 
+            [Columns.APPLICATIONS.ERROR]: 
+                "",
+
             [Columns.APPLICATIONS.UPDATED]:
                 now
         }
