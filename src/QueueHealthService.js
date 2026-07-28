@@ -7,6 +7,7 @@ class QueueHealthService {
       newApplications: 0,
       processingApplications: 0,
       sentApplications: 0,
+      failedApplications: 0,
 
       duplicateClaims: [],
       duplicateThreads: [],
@@ -101,6 +102,10 @@ class QueueHealthService {
 
         case CONSTANTS.STATUS.SENT:
             report.sentApplications++;
+            break;
+
+        case CONSTANTS.STATUS.FAILED:
+            report.failedApplications++;
             break;
 
         }
@@ -284,6 +289,11 @@ class QueueHealthService {
         AppLogger.info("Duplicate Companies: " + report.duplicateCompanies.length);
 
         AppLogger.info("Orphaned Rows      : " + report.orphanedRows.length);
+
+        AppLogger.info(
+            "FAILED             : " +
+            report.failedApplications
+        );
 
         AppLogger.info(
             "Stuck Rows         : " +

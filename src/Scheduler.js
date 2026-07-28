@@ -6,6 +6,8 @@ class Scheduler {
     // Process new applications first
         ApplicationProcessor.processNewApplications();
 
+        RecoveryService.run();
+
         const monitor = SystemMonitor.start();
 
         try {

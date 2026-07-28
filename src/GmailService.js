@@ -77,6 +77,18 @@ class GmailService {
     const configuredSender =
       SenderSelector.getCurrentSenderEmail().trim().toLowerCase();
 
+    if (
+        EmailEventRepository.isSuppressed(
+            application.recipientEmail
+        )
+    ) {
+
+        throw new Error(
+            `${application.recipientEmail} has previously hard bounced.`
+        );
+
+    }
+
 if (currentUser !== configuredSender) {
   throw new Error(
     `Configured sender ${configuredSender} does not match executing user ${currentUser}`
@@ -162,6 +174,20 @@ if (currentUser !== configuredSender) {
   });
 
     this.applyLabel(thread);
+
+    EmailEventRepository.log(
+
+      application.recipientEmail,
+
+      configuredSender,
+
+      "SENT",
+
+      "INITIAL",
+
+      email.subject
+
+  );
 
     return {
 

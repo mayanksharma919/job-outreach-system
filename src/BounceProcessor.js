@@ -4,15 +4,32 @@ class BounceProcessor {
 
     try {
 
-      if (
-        !BounceService.hasBounced(application)
-      ) {
+      const bounce =
+        BounceService.hasBounced(application);
+
+      if (!bounce.bounced) {
+
         return false;
+
       }
 
       ApplicationRepository.updateStatus(
         application,
         CONSTANTS.STATUS.BOUNCED
+      );
+
+      EmailEventRepository.log(
+
+          application.recipientEmail,
+
+          application.senderAccount,
+
+          "BOUNCE",
+
+          bounce.type,
+
+          bounce.reason
+
       );
 
       AppLogger.info(

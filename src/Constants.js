@@ -56,7 +56,12 @@ const CONSTANTS = {
 
     FAILED: "FAILED",
 
-    CLOSED: "CLOSED"
+    CLOSED: "CLOSED",
+
+    PROCESSING: "PROCESSING",
+
+    DRAFT: "DRAFT",
+
 
   },
 
@@ -130,7 +135,49 @@ const CONSTANTS = {
 
   CLAIM_TIMEOUT_MINUTES: 5
 
-  }
+  },
+
+  RECOVERY: {
+
+    MAX_RETRIES: 3,
+
+    STUCK_MINUTES: 30
+
+},
+
+EMAIL_EVENTS: "EMAIL_EVENTS",
+
+EVENTS: {
+
+    SENT: "SENT",
+
+    REPLY: "REPLY",
+
+    BOUNCE: "BOUNCE",
+
+    FOLLOWUP: "FOLLOWUP"
+
+},
+
+EVENT_TYPES: {
+
+    INITIAL: "INITIAL",
+
+    HARD: "HARD",
+
+    SOFT: "SOFT",
+
+    TEMPORARY: "TEMPORARY",
+
+    OOO: "OOO",
+
+    POSITIVE: "POSITIVE",
+
+    NEGATIVE: "NEGATIVE",
+
+    UNKNOWN: "UNKNOWN"
+
+}
 
 };
 
