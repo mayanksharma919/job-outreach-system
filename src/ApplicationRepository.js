@@ -420,37 +420,33 @@ class ApplicationRepository {
 
       }
 
-      row[Columns.APPLICATIONS.STATUS] =
-        CONSTANTS.STATUS.PROCESSING;
-
-      row[Columns.APPLICATIONS.CLAIMED_BY] =
-        token;
-
-      row[Columns.APPLICATIONS.CLAIMED_AT] =
-        now;
-
-      row[Columns.APPLICATIONS.UPDATED] =
-        now;
-
-      row[Columns.APPLICATIONS.SENDER_ACCOUNT] =
-        senderEmail;
-
-      sheet.getRange(
-          i + 1,
-          1,
-          1,
-          row.length
-      ).setValues([row]);
+      this.updateFields(
+        i + 1,
+        {
+          [Columns.APPLICATIONS.STATUS]: CONSTANTS.STATUS.PROCESSING,
+          [Columns.APPLICATIONS.CLAIMED_BY]: token,
+          [Columns.APPLICATIONS.CLAIMED_AT]: now,
+          [Columns.APPLICATIONS.UPDATED]: now,
+          [Columns.APPLICATIONS.SENDER_ACCOUNT]: senderEmail
+        }
+      );
 
       SpreadsheetApp.flush();
 
-      const application =
-          this.mapRow(
-              row,
-              i + 1
-          );
+      const updatedRow =
+        sheet
+          .getRange(i + 1, 1, 1, row.length)
+          .getValues()[0];
 
-      return application;
+
+      AppLogger.info(
+        `Claimed row ${i + 1} | Status=${updatedRow[Columns.APPLICATIONS.STATUS]} | Sender=${updatedRow[Columns.APPLICATIONS.SENDER_ACCOUNT]}`
+      );
+
+      return this.mapRow(
+        updatedRow,
+        i + 1
+      );
 
     }
 
@@ -508,14 +504,15 @@ class ApplicationRepository {
         `Releasing expired claim: ${row[Columns.APPLICATIONS.COMPANY]}`
       );
 
-      row[Columns.APPLICATIONS.STATUS] = CONSTANTS.STATUS.NEW;
-      row[Columns.APPLICATIONS.CLAIMED_BY] = "";
-      row[Columns.APPLICATIONS.CLAIMED_AT] = "";
-      row[Columns.APPLICATIONS.UPDATED] = now;
-
-      sheet
-        .getRange(i + 1, 1, 1, row.length)
-        .setValues([row]);
+      this.updateFields(
+        i + 1,
+        {
+          [Columns.APPLICATIONS.STATUS]: CONSTANTS.STATUS.NEW,
+          [Columns.APPLICATIONS.CLAIMED_BY]: "",
+          [Columns.APPLICATIONS.CLAIMED_AT]: "",
+          [Columns.APPLICATIONS.UPDATED]: now
+        }
+      );
 
     }
 
