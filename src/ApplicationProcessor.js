@@ -135,15 +135,44 @@ class ApplicationProcessor {
           const senderEmail =
             sender.email;
 
-          ApplicationRepository.markDraftCreated(
-            application.rowNumber,
-            senderEmail,
-            result
-          );
+          if (result.status === "DRAFT") {
 
-          success++;
+            ApplicationRepository.markDraftCreated(
+              application.rowNumber,
+              senderEmail,
+              result
+            );
 
-          if (
+          } else if (result.status === "SENT") {
+
+            ApplicationRepository.updateFields(
+              application.rowNumber,
+              {
+                [Columns.APPLICATIONS.STATUS]:
+                  CONSTANTS.STATUS.SENT,
+
+                [Columns.APPLICATIONS.SENDER_ACCOUNT]:
+                  senderEmail,
+
+                [Columns.APPLICATIONS.THREAD_ID]:
+                  result.threadId,
+
+                [Columns.APPLICATIONS.DRAFT_ID]:
+                  "",
+
+                [Columns.APPLICATIONS.SENT_DATE]:
+                  new Date(),
+
+                [Columns.APPLICATIONS.UPDATED]:
+                  new Date()
+              }
+            );
+
+          }
+
+                    success++;
+
+                    if (
             !CompanyRepository.exists(
               application.company
             )

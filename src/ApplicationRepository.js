@@ -255,27 +255,37 @@ class ApplicationRepository {
 }
 
 
-  static markSent(rowNumber) {
+  static markSent(
+    rowNumber,
+    senderEmail,
+    threadId
+) {
 
     const now = new Date();
 
     this.updateFields(
-      rowNumber,
-      {
+        rowNumber,
+        {
+            [Columns.APPLICATIONS.STATUS]:
+                CONSTANTS.STATUS.SENT,
 
-        [Columns.APPLICATIONS.STATUS]:
-          CONSTANTS.STATUS.SENT,
+            [Columns.APPLICATIONS.SENDER_ACCOUNT]:
+                senderEmail,
 
-        [Columns.APPLICATIONS.SENT_DATE]:
-          now,
+            [Columns.APPLICATIONS.THREAD_ID]:
+                threadId,
 
-        [Columns.APPLICATIONS.UPDATED]:
-          now
+            [Columns.APPLICATIONS.DRAFT_ID]:
+                "",
 
-      }
+            [Columns.APPLICATIONS.SENT_DATE]:
+                now,
+
+            [Columns.APPLICATIONS.UPDATED]:
+                now
+        }
     );
-
-  }
+}
 
 
   static updateFollowUp(

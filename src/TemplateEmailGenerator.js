@@ -152,13 +152,18 @@ ${candidate.name}`;
 
 I recently applied for the ${application.jobTitle} position at ${application.company} and wanted to briefly introduce myself.
 
-Over the past ${context.candidate.experienceYears} years, I've built cloud-based data platforms using technologies such as ${context.matchedSkills.join(", ")}. The responsibilities outlined in the role closely match the type of work I've been doing, which is what encouraged me to apply.
+const skills =
+  context.matchedSkills.length > 0
+    ? context.matchedSkills.join(", ")
+    : "AWS, Azure, Spark, SQL and Python";
+
+Over the past ${context.candidate.experienceYears} years, I've built cloud-based data platforms using technologies such as ${skills} across AWS and Azure environments.  
 
 ${language}
 
 If my background aligns with what you're looking for, I'd really appreciate the opportunity to speak with the hiring team.
 
-Thank you for your time.
+If my background aligns with what you're looking for, I'd really appreciate the opportunity to speak with the hiring team.
 
 ${signature}`
 
@@ -190,7 +195,7 @@ ${language}
 
 The role genuinely feels like a strong match for my experience, so I wanted to introduce myself directly. If you have a few minutes, I'd be glad to connect.
 
-Thank you for your time.
+If my background aligns with what you're looking for, I'd really appreciate the opportunity to speak with the hiring team.
 
 ${signature}`
 
