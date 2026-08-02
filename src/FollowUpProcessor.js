@@ -2,21 +2,26 @@ class FollowUpProcessor {
 
   static process(application) {
 
+    AppLogger.info(
+        `Checking follow-up eligibility: ${application.company}`
+    );
+
     try {
 
       if (
         !FollowUpService.isFollowUpDue(application)
       ) {
+
+        AppLogger.info(
+            `Not yet due: ${application.company}`
+        );
         return false;
       }
 
       const followUp =
-        EmailGenerator.generate(
-          application,
-          {
-            followUp: true
-          }
-        );
+          FollowUpGenerator.generate(
+              application
+          );
 
       const result =
         RetryService.execute(

@@ -2,6 +2,12 @@ class ReplyService {
 
   static hasRecruiterReplied(application) {
 
+    if (!application.threadId) {
+
+        return false;
+
+    }
+
     const thread = GmailApp.getThreadById(
       application.threadId
     );
@@ -46,7 +52,7 @@ class ReplyService {
     for (const application of applications) {
 
         if (application.status === CONSTANTS.STATUS.REPLIED) {
-            return;
+            continue;
         }
 
         if (!application.threadId) {
@@ -65,6 +71,24 @@ class ReplyService {
             application,
             CONSTANTS.STATUS.REPLIED
         );
+
+        EmailEventRepository.log(
+
+          application.recipientEmail,
+
+          application.senderAccount,
+
+          "REPLY",
+
+          "RECRUITER",
+
+          application.company
+
+      );
+
+      AppLogger.info(
+          `Reply detected: ${application.company}`
+      );
 
     }
 

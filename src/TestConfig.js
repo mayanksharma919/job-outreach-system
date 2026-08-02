@@ -79,3 +79,8 @@ function testSpreadsheet() {
   Logger.log(id);
 
 }
+
+
+function refreshConfig() {
+  Config.clearCache();
+}

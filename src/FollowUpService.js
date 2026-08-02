@@ -33,6 +33,12 @@ class FollowUpService {
       / (1000 * 60 * 60 * 24);
 
     return days >= afterDays;
+    AppLogger.info(
+        `${application.company}
+        Days=${days}
+        Required=${afterDays}
+        Sent=${referenceDate}`
+    );
 
   }
 

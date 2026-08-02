@@ -2,6 +2,14 @@ class BounceService {
 
   static hasBounced(application) {
 
+    if (!application.threadId) {
+
+        return {
+            bounced: false
+        };
+
+    }
+
     const thread =
       GmailApp.getThreadById(application.threadId);
 
@@ -17,23 +25,30 @@ class BounceService {
 
     for (const message of messages) {
 
-      const from =
-        message.getFrom().toLowerCase();
+      const sender =
+          message.getFrom().toLowerCase();
 
       const subject =
-        message.getSubject().toLowerCase();
+          message.getSubject().toLowerCase();
 
       const body =
-        message.getPlainBody().toLowerCase();
+          message.getPlainBody().toLowerCase();
 
       if (
-        from.includes("mailer-daemon") ||
-        from.includes("mail delivery subsystem") ||
-        from.includes("postmaster") ||
-        subject.includes("delivery") ||
-        subject.includes("undelivered") ||
-        subject.includes("returned")
-      ) {
+
+          sender.includes("mailer-daemon") ||
+
+          sender.includes("mail delivery subsystem") ||
+
+          sender.includes("postmaster") ||
+
+          subject.includes("delivery") ||
+
+          subject.includes("undelivered") ||
+
+          subject.includes("returned")
+
+      )  {
 
         return {
 

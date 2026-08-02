@@ -15,6 +15,19 @@ class Scheduler {
             const applications =
                 ApplicationRepository.getActiveApplications();
 
+
+            AppLogger.info(
+                `Applications eligible for reply/follow-up: ${applications.length}`
+            );
+
+            applications.forEach(application => {
+
+                AppLogger.info(
+                    `${application.company} | Status=${application.status} | FollowUps=${application.followUpCount} | Sent=${application.sentDate}`
+                );
+
+            });
+
             monitor.applicationsProcessed =
                 applications.length;
 

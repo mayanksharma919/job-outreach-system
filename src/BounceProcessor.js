@@ -32,9 +32,18 @@ class BounceProcessor {
 
       );
 
+
       AppLogger.info(
-        `Bounce detected: ${application.company}`
+          `Bounce detected: ${application.company}`
       );
+
+      if (bounce.type === "HARD") {
+
+          AppLogger.warn(
+              `${application.recipientEmail} permanently suppressed.`
+          );
+
+      }
 
       return true;
 
