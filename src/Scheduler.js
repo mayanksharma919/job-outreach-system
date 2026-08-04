@@ -12,18 +12,34 @@ class Scheduler {
 
         try {
 
-            const applications =
-                ApplicationRepository.getActiveApplications();
+            const currentSender =
+                Session.getEffectiveUser()
+                    .getEmail()
+                    .trim()
+                    .toLowerCase();
 
+            const applications =
+                ApplicationRepository
+                    .getActiveApplications()
+                    .filter(application =>
+                        application.senderAccount &&
+                        application.senderAccount
+                            .trim()
+                            .toLowerCase() === currentSender
+                    );
 
             AppLogger.info(
-                `Applications eligible for reply/follow-up: ${applications.length}`
+                `Current Sender: ${currentSender}`
+            );
+
+            AppLogger.info(
+                `Applications Found: ${applications.length}`
             );
 
             applications.forEach(application => {
 
                 AppLogger.info(
-                    `${application.company} | Status=${application.status} | FollowUps=${application.followUpCount} | Sent=${application.sentDate}`
+                    `${application.company} | ${application.senderAccount}`
                 );
 
             });
@@ -33,15 +49,39 @@ class Scheduler {
 
             for (const application of applications) {
 
-                if (ReplyProcessor.process(application)) {
+                AppLogger.info("================================");
+                AppLogger.info("Company: " + application.company);
+
+                const replied =
+                    ReplyProcessor.process(application);
+
+                AppLogger.info(
+                    "ReplyProcessor: " + replied
+                );
+
+                const bounced =
+                    BounceProcessor.process(application);
+
+                AppLogger.info(
+                    "BounceProcessor: " + bounced
+                );
+
+                const followed =
+                    FollowUpProcessor.process(application);
+
+                AppLogger.info(
+                    "FollowUpProcessor: " + followed
+                );
+
+                if (replied) {
                     monitor.repliesFound++;
                 }
 
-                if (BounceProcessor.process(application)) {
+                if (bounced) {
                     monitor.bouncesFound++;
                 }
 
-                if (FollowUpProcessor.process(application)) {
+                if (followed) {
                     monitor.emailsSent++;
                 }
 

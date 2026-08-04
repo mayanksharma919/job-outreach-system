@@ -311,6 +311,13 @@ if (currentUser !== configuredSender) {
 
   static threadHasSentMessage(threadId) {
 
+    Logger.log(JSON.stringify({
+      company: application.company,
+      threadId: application.threadId,
+      type: typeof application.threadId,
+      length: String(application.threadId).length
+    }));
+
     const thread = GmailApp.getThreadById(threadId);
 
     if (!thread) {

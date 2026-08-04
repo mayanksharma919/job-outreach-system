@@ -34,9 +34,11 @@ class RetryService {
         lastError = error;
 
         AppLogger.error(
-
           `${description} failed (Attempt ${attempt}/${maxAttempts})`
+        );
 
+        AppLogger.error(
+          error.stack || error.message || error.toString()
         );
 
         if (attempt < maxAttempts) {

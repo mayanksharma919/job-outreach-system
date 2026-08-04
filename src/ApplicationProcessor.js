@@ -123,11 +123,16 @@ class ApplicationProcessor {
 
             );
 
+
           if (!result.success) {
 
             throw result.error;
 
           }
+
+          AppLogger.info(
+                "Returned ThreadId = " + result.threadId
+            );
 
           const sender =
             SenderSelector.getCurrentSender();
@@ -136,6 +141,10 @@ class ApplicationProcessor {
             sender.email;
 
           if (result.status === "DRAFT") {
+
+            AppLogger.info(
+                "Saving ThreadId = " + result.threadId
+            );
 
             ApplicationRepository.markDraftCreated(
               application.rowNumber,

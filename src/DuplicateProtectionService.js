@@ -28,7 +28,19 @@ class DuplicateProtectionService {
 
     }
 
-    const thread = threads[0];
+    const thread = threads.reduce((latest, current) => {
+
+        const latestDate =
+          latest.getLastMessageDate().getTime();
+
+        const currentDate =
+          current.getLastMessageDate().getTime();
+
+        return currentDate > latestDate
+          ? current
+          : latest;
+
+    });
 
     return {
 

@@ -84,3 +84,172 @@ function testSpreadsheet() {
 function refreshConfig() {
   Config.clearCache();
 }
+
+
+function debugFollowUpCandidates() {
+
+  const applications =
+      ApplicationRepository.getActiveApplications();
+
+  applications.forEach(application => {
+
+    Logger.log(
+      `${application.company}
+Status=${application.status}
+Sent=${application.sentDate}
+FollowUps=${application.followUpCount}
+Thread=${application.threadId}`
+    );
+
+  });
+
+}
+
+function debugOneThread() {
+
+  const threadId = "19faa73035af1521";   // <-- paste one failing thread ID here
+
+  const thread = GmailApp.getThreadById(threadId);
+
+  if (!thread) {
+    Logger.log("NOT FOUND");
+    return;
+  }
+
+  Logger.log("FOUND");
+  Logger.log(thread.getFirstMessageSubject());
+}
+
+function debugNewestSentThread() {
+
+  const threads = GmailApp.search(
+    'in:sent newer_than:7d',
+    0,
+    10
+  );
+
+  threads.forEach((thread, index) => {
+
+    Logger.log("==========");
+    Logger.log(index);
+    Logger.log(thread.getId());
+    Logger.log(thread.getFirstMessageSubject());
+
+  });
+
+}
+
+
+function findThreadBySubject() {
+
+  const subject = "Application for Data Engineer (m/w/d) (Data Engineer)"; // <-- use one failing subject
+
+  const threads = GmailApp.search(
+    `subject:"${subject}"`,
+    0,
+    10
+  );
+
+  Logger.log("Found: " + threads.length);
+
+  threads.forEach(thread => {
+
+    Logger.log("====================");
+    Logger.log(thread.getId());
+    Logger.log(thread.getFirstMessageSubject());
+
+  });
+
+}
+
+function debugApplicationThread() {
+
+  const company = "inovex GmbH"; // <-- replace
+
+  const app = ApplicationRepository
+      .getApplications()
+      .find(a => a.company === company);
+
+  Logger.log("Stored Thread ID: " + app.threadId);
+
+  const thread = GmailApp.getThreadById(app.threadId);
+
+  Logger.log("Exists: " + (thread != null));
+
+  if (thread) {
+
+    Logger.log(thread.getFirstMessageSubject());
+
+  }
+
+}
+
+
+function testThread() {
+  const id = "19fcbc67d015d79c";
+
+  const thread = GmailApp.getThreadById(id);
+
+  Logger.log(thread);
+
+  if (thread) {
+    Logger.log(thread.getFirstMessageSubject());
+  }
+}
+
+
+function debugBrunel() {
+
+  const threadId = "19fae890027c9925";
+
+  const thread = GmailApp.getThreadById(threadId);
+
+  if (!thread) {
+    Logger.log("Thread NOT FOUND");
+    return;
+  }
+
+  Logger.log("Subject: " + thread.getFirstMessageSubject());
+
+  const messages = thread.getMessages();
+
+  Logger.log("Messages: " + messages.length);
+
+  messages.forEach((message, index) => {
+
+    Logger.log("--------------------");
+    Logger.log(index + 1);
+    Logger.log("From: " + message.getFrom());
+    Logger.log("Date: " + message.getDate());
+    Logger.log("Draft: " + message.isDraft());
+
+  });
+
+}
+
+
+function debugSingleFollowUp() {
+
+  const threadId = "19fae890027c9925";
+
+  const application =
+      ApplicationRepository
+          .getActiveApplications()
+          .find(app => app.threadId === threadId);
+
+  if (!application) {
+
+    Logger.log("Application not found");
+
+    return;
+
+  }
+
+  Logger.log(application.company);
+
+  const result =
+      FollowUpProcessor.process(application);
+
+  Logger.log("RESULT = " + result);
+
+}

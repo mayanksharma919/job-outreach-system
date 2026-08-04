@@ -13,6 +13,45 @@ class ApplicationRepository {
     updates
   ) {
 
+    // ===== DEBUG STATUS CHANGES =====
+    if (
+      Object.prototype.hasOwnProperty.call(
+        updates,
+        Columns.APPLICATIONS.STATUS
+      )
+    ) {
+
+      const application =
+        this.getApplications()
+            .find(a => a.rowNumber === rowNumber);
+
+      AppLogger.warn(
+        "========== STATUS CHANGE =========="
+      );
+
+      AppLogger.warn(
+        `Company    : ${application?.company}`
+      );
+
+      AppLogger.warn(
+        `Row        : ${rowNumber}`
+      );
+
+      AppLogger.warn(
+        `Old Status : ${application?.status}`
+      );
+
+      AppLogger.warn(
+        `New Status : ${updates[Columns.APPLICATIONS.STATUS]}`
+      );
+
+      AppLogger.warn(
+        new Error().stack
+      );
+
+    }
+    // ================================
+
     const sheet = this.getSheet();
 
     for (const [column, value] of Object.entries(updates)) {
@@ -231,28 +270,34 @@ class ApplicationRepository {
 
   }
 
-  static updateError(
-  rowNumber,
-  error
-) {
+    // static updateError(
+    //   rowNumber,
+    //   error
+    // ) {
 
-  this.updateFields(
-    rowNumber,
-    {
+    //   AppLogger.error("========== updateError() ==========");
+    //   AppLogger.error("Row: " + rowNumber);
+    //   AppLogger.error("Error: " + error);
 
-      [Columns.APPLICATIONS.ERROR]:
-        error,
+    //   this.updateFields(
+    //     rowNumber,
+    //     {
 
-      [Columns.APPLICATIONS.STATUS]:
-        CONSTANTS.STATUS.ERROR,
+    //       [Columns.APPLICATIONS.ERROR]:
+    //         error,
 
-      [Columns.APPLICATIONS.UPDATED]:
-        new Date()
+    //       [Columns.APPLICATIONS.STATUS]:
+    //         CONSTANTS.STATUS.ERROR,
 
-    }
-  );
+    //       [Columns.APPLICATIONS.UPDATED]:
+    //         new Date()
 
-}
+    //     }
+    //   );
+
+    // }
+
+    
 
 
   static markSent(
@@ -574,21 +619,67 @@ class ApplicationRepository {
 
   } 
 
+  // static updateStatus(application, status) {
+
+  //   AppLogger.error(
+  //     "STATUS CHANGE -> " +
+  //     application.company +
+  //     " : " +
+  //     application.status +
+  //     " -> " +
+  //     status +
+  //     "\n" +
+  //     new Error().stack
+  //   );
+
+  //   this.updateFields(
+  //     application.rowNumber,
+  //     {
+  //       [Columns.APPLICATIONS.STATUS]: status,
+  //       [Columns.APPLICATIONS.UPDATED]: new Date()
+  //     }
+  //   );
+
+  // }
+
+  static updateError(rowNumber, error) {
+
+    const application =
+        this.getApplications()
+            .find(a => a.rowNumber === rowNumber);
+
+    AppLogger.error("========== updateError ==========");
+    AppLogger.error("Company : " + application.company);
+    AppLogger.error("Status before : " + application.status);
+    AppLogger.error("Error : " + error);
+    AppLogger.error(new Error().stack);
+
+    this.updateFields(
+        rowNumber,
+        {
+            [Columns.APPLICATIONS.ERROR]: error,
+            [Columns.APPLICATIONS.STATUS]: CONSTANTS.STATUS.ERROR,
+            [Columns.APPLICATIONS.UPDATED]: new Date()
+        }
+    );
+  }
+
+
   static updateStatus(application, status) {
+
+    AppLogger.info("========== STATUS CHANGE ==========");
+    AppLogger.info("Company : " + application.company);
+    AppLogger.info("Old     : " + application.status);
+    AppLogger.info("New     : " + status);
+    AppLogger.info(new Error().stack);
 
     this.updateFields(
       application.rowNumber,
       {
-
-        [Columns.APPLICATIONS.STATUS]:
-          status,
-
-        [Columns.APPLICATIONS.UPDATED]:
-          new Date()
-
+        [Columns.APPLICATIONS.STATUS]: status,
+        [Columns.APPLICATIONS.UPDATED]: new Date()
       }
     );
-
   }
 
 

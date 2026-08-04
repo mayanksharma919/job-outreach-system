@@ -3,28 +3,42 @@ class FollowUpProcessor {
   static process(application) {
 
     AppLogger.info(
-        `Checking follow-up eligibility: ${application.company}`
+        `FOLLOWUP CHECK -> ${application.company}`
     );
+
+    AppLogger.info(`========== FOLLOW UP ==========`);
+
+    AppLogger.info(`Company      : ${application.company}`);
+    AppLogger.info(`Status       : ${application.status}`);
+    AppLogger.info(`Thread       : ${application.threadId}`);
+    AppLogger.info(`Sent Date    : ${application.sentDate}`);
+    AppLogger.info(`FollowUps    : ${application.followUpCount}`);
 
     try {
 
-      if (
-        !FollowUpService.isFollowUpDue(application)
-      ) {
+      const due =
+        FollowUpService.isFollowUpDue(application);
 
-        AppLogger.info(
-            `Not yet due: ${application.company}`
-        );
+      AppLogger.info(`Is Due       : ${due}`);
+
+      if (!due) {
+
+        AppLogger.info("Skipping follow-up.");
+
         return false;
+
       }
 
+      AppLogger.info("Generating follow-up...");
+
       const followUp =
-          FollowUpGenerator.generate(
-              application
-          );
+        FollowUpTemplateService.generate(application);
+
+      AppLogger.info("Sending follow-up...");
 
       const result =
         RetryService.execute(
+          
 
           () => GmailService.sendFollowUp(
             application,
@@ -35,35 +49,30 @@ class FollowUpProcessor {
 
         );
 
+      AppLogger.info(
+        JSON.stringify(result)
+      );
+
       if (!result.success) {
 
-        ApplicationRepository.updateStatus(
-
-          application,
-
-          CONSTANTS.STATUS.FAILED
-
-        );
-
         AppLogger.error(
-
-          `Follow-up permanently failed: ${application.company}`
-
+          "RetryService returned failure."
         );
 
         return false;
 
       }
 
+      AppLogger.info(
+        "Updating sheet..."
+      );
+
       ApplicationRepository.markFollowUpSent(
         application
       );
 
-      application.followUpCount++;
-      application.lastFollowUp = new Date();
-
       AppLogger.info(
-        `Follow up sent: ${application.company}`
+        "Follow-up completed successfully."
       );
 
       return true;
@@ -71,9 +80,7 @@ class FollowUpProcessor {
     }
     catch (error) {
 
-      AppLogger.error(
-        `Follow up failed: ${application.company} - ${error}`
-      );
+      AppLogger.error(error);
 
       return false;
 

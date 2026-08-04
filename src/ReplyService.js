@@ -16,25 +16,34 @@ class ReplyService {
       return false;
     }
 
-    const senderEmail = Config.get(
-      CONSTANTS.CONFIG_KEYS.SENDER_EMAIL
-    ).toLowerCase();
+    const senderEmail =
+        application.senderAccount
+            .trim()
+            .toLowerCase();
 
     const messages = thread.getMessages();
 
-    for (const message of messages) {
+    // Skip the first message because it is always our initial email.
+    for (let i = 1; i < messages.length; i++) {
 
-      const from = message.getFrom().toLowerCase();
+        const from =
+            messages[i]
+                .getFrom()
+                .toLowerCase();
 
-      if (!from.includes(senderEmail)) {
-
-        Logger.log(
-          `Recruiter replied: ${application.company}`
+        AppLogger.info(
+            `Checking reply from: ${from}`
         );
 
-        return true;
+        if (!from.includes(senderEmail)) {
 
-      }
+            AppLogger.info(
+                `External reply detected: ${from}`
+            );
+
+            return true;
+
+        }
 
     }
 
