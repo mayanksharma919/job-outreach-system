@@ -253,3 +253,56 @@ function debugSingleFollowUp() {
   Logger.log("RESULT = " + result);
 
 }
+
+
+function debugOldFollowUp() {
+
+  const threadId = "PASTE_OLD_THREAD_ID_HERE";
+
+  const application =
+      ApplicationRepository
+          .getActiveApplications()
+          .find(app => app.threadId === threadId);
+
+  Logger.log(application);
+
+  Logger.log(
+      FollowUpProcessor.process(application)
+  );
+
+}
+
+
+function checkDuplicateThreadIds() {
+
+  const apps = ApplicationRepository.getApplications();
+
+  const map = {};
+
+  apps.forEach(app => {
+
+    if (!app.threadId) return;
+
+    if (!map[app.threadId]) {
+      map[app.threadId] = [];
+    }
+
+    map[app.threadId].push(app.company);
+
+  });
+
+  Object.entries(map).forEach(([threadId, companies]) => {
+
+    if (companies.length > 1) {
+
+      Logger.log(threadId);
+
+      Logger.log(companies.join(", "));
+
+      Logger.log("----------------------");
+
+    }
+
+  });
+
+}

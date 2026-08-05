@@ -205,10 +205,41 @@ if (currentUser !== configuredSender) {
 
   static sendFollowUp(application, followUp) {
 
-    const thread = GmailApp.getThreadById(application.threadId);
+    let thread =
+        GmailApp.getThreadById(application.threadId);
 
     if (!thread) {
-      throw new Error(`Thread not found: ${application.threadId}`);
+
+        AppLogger.warn(
+            `Stored thread not found: ${application.threadId}`
+        );
+
+        thread =
+            this.recoverThread(application);
+
+        if (!thread) {
+
+            throw new Error(
+                `Unable to recover Gmail thread.`
+            );
+
+        }
+
+        ApplicationRepository.updateFields(
+            application.rowNumber,
+            {
+                [Columns.APPLICATIONS.THREAD_ID]:
+                    thread.getId(),
+
+                [Columns.APPLICATIONS.UPDATED]:
+                    new Date()
+            }
+        );
+
+        AppLogger.info(
+            `Thread repaired: ${thread.getId()}`
+        );
+
     }
 
     const messages = thread.getMessages();

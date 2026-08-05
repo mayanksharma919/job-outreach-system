@@ -673,6 +673,19 @@ class ApplicationRepository {
     AppLogger.info("New     : " + status);
     AppLogger.info(new Error().stack);
 
+
+    if (updates.hasOwnProperty(Columns.APPLICATIONS.STATUS)) {
+
+      AppLogger.error(
+          "STATUS WRITE\n" +
+          "Old: " + sheet.getRange(rowNumber, Columns.APPLICATIONS.STATUS + 1).getValue() +
+          "\nNew: " + updates[Columns.APPLICATIONS.STATUS] +
+          "\nStack:\n" +
+          new Error().stack
+      );
+
+    }
+
     this.updateFields(
       application.rowNumber,
       {

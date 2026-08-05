@@ -41,6 +41,16 @@ class RetryService {
           error.stack || error.message || error.toString()
         );
 
+        AppLogger.error(
+            "RetryService Exception:"
+        );
+
+        AppLogger.error(
+            error.stack || error.toString()
+        );
+
+        lastError = error;
+
         if (attempt < maxAttempts) {
 
           Utilities.sleep(

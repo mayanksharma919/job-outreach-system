@@ -111,24 +111,33 @@ class ApplicationProcessor {
           const email =
             EmailGenerator.generate(application);
 
+          AppLogger.info("STEP 1 - About to call GmailService.send()");
+
           const result =
-            RetryService.execute(
+              RetryService.execute(
 
-              () => GmailService.send(
-                application,
-                email
-              ),
+                () => GmailService.send(
+                  application,
+                  email
+                ),
 
-              `Send email: ${application.company}`
+                `Send email: ${application.company}`
 
-            );
+              );
 
+          AppLogger.info("STEP 2 - GmailService.send() returned");
+
+          AppLogger.info(
+              JSON.stringify(result)
+          );
 
           if (!result.success) {
 
-            throw result.error;
+              throw result.error;
 
           }
+
+          AppLogger.info("STEP 3 - Result indicates SUCCESS");
 
           AppLogger.info(
                 "Returned ThreadId = " + result.threadId
@@ -154,49 +163,61 @@ class ApplicationProcessor {
 
           } else if (result.status === "SENT") {
 
-            ApplicationRepository.updateFields(
-              application.rowNumber,
-              {
-                [Columns.APPLICATIONS.STATUS]:
-                  CONSTANTS.STATUS.SENT,
+              AppLogger.info("STEP 4 - Writing SENT status to Applications sheet");
 
-                [Columns.APPLICATIONS.SENDER_ACCOUNT]:
-                  senderEmail,
+              ApplicationRepository.updateFields(
+                application.rowNumber,
+                {
+                  [Columns.APPLICATIONS.STATUS]:
+                    CONSTANTS.STATUS.SENT,
 
-                [Columns.APPLICATIONS.THREAD_ID]:
-                  result.threadId,
+                  [Columns.APPLICATIONS.SENDER_ACCOUNT]:
+                    senderEmail,
 
-                [Columns.APPLICATIONS.DRAFT_ID]:
-                  "",
+                  [Columns.APPLICATIONS.THREAD_ID]:
+                    result.threadId,
 
-                [Columns.APPLICATIONS.SENT_DATE]:
-                  new Date(),
+                  [Columns.APPLICATIONS.DRAFT_ID]:
+                    "",
 
-                [Columns.APPLICATIONS.UPDATED]:
-                  new Date()
-              }
-            );
+                  [Columns.APPLICATIONS.SENT_DATE]:
+                    new Date(),
+
+                  [Columns.APPLICATIONS.UPDATED]:
+                    new Date()
+                }
+              );
+
+              AppLogger.info("STEP 5 - SENT successfully written to sheet");
 
           }
 
                     success++;
 
-                    if (
-            !CompanyRepository.exists(
-              application.company
-            )
+          AppLogger.info("STEP 6 - CompanyRepository");
+
+          if (
+              !CompanyRepository.exists(
+                  application.company
+              )
           ) {
 
-            CompanyRepository.create(
-              application.company,
-              senderEmail
-            );
+              CompanyRepository.create(
+                  application.company,
+                  senderEmail
+              );
 
           }
 
+          AppLogger.info("STEP 7 - CompanyRepository finished");
+
+          AppLogger.info("STEP 8 - Increment sender");
+
           SenderRepository.incrementSentToday(
-            senderEmail
+              senderEmail
           );
+
+          AppLogger.info("STEP 9 - Sender incremented");
 
           DeliverabilityService.sleepBetweenEmails();
 
@@ -214,20 +235,29 @@ class ApplicationProcessor {
         }
         catch (error) {
 
-          failed++;
+              failed++;
 
-          AppLogger.error(
-            `${application.company}: ${error}`
-          );
+              AppLogger.error("======================================");
+              AppLogger.error("APPLICATION FAILED");
+              AppLogger.error("Company : " + application.company);
+              AppLogger.error("Row     : " + application.rowNumber);
+              AppLogger.error("Status  : " + application.status);
+              AppLogger.error("Message : " + error);
 
-          ApplicationRepository.updateError(
-            application.rowNumber,
-            error.toString()
-          );
+              if (error.stack) {
+                  AppLogger.error(error.stack);
+              }
 
-          WorkerStatusService.onWorkerError(error);
+              AppLogger.error("======================================");
 
-        }
+              ApplicationRepository.updateError(
+                  application.rowNumber,
+                  error.toString()
+              );
+
+              WorkerStatusService.onWorkerError(error);
+
+          }
 
       }
 
